@@ -11,7 +11,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/home")
 public class HomeController {
-
     @GetMapping("")
     public ResponseEntity<Map<String, String>> home() {
         Map<String, String> response = new HashMap<>();
