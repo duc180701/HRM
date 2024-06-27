@@ -34,6 +34,7 @@ public class Employee {
     private int status;
 
     public Employee() {
+
     }
 
     public Employee(Long employeeID, String fullName, int gender, String address, Date dateOfBirth, String phoneNumber, String email, String position, String department, Date startDate, Date endDate, int status) {
