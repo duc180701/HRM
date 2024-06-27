@@ -20,6 +20,7 @@ public class SecurityConfig {
                             .requestMatchers("/home").permitAll()
                             .anyRequest().authenticated()
                     );
+
             return http.build();
         }
 
