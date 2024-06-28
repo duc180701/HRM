@@ -34,6 +34,7 @@ public class Employee {
     private LocalDate dateOfBirth;
 
     @Column(name="phonenumber")
+    @NotBlank (message = "Please enter a valid phonenumber")
     @Pattern(regexp = "^[0-9]+$", message = "Phonenumber must contain only numbers")
     @Pattern(regexp = "^0\\d{9}$", message = "Phonenumber must be 10 characters long and start with 0")
     private String phoneNumber;
