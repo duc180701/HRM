@@ -17,7 +17,6 @@ public class WorkHistory {
 
     @Column(name = "employeeid")
     @NotNull
-    @Pattern(regexp = "^[0-9]+$", message = "Employee ID must contain numbers")
     private Long employeeID;
 
     @Column(name = "position")

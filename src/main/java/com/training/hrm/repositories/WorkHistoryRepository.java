@@ -11,11 +11,10 @@ import java.util.Optional;
 
 @Repository
 public interface WorkHistoryRepository extends JpaRepository<WorkHistory, Long> {
-    WorkHistory findWorkHistoryById(Long id);
+    WorkHistory findWorkHistoryByWorkHistoryID(Long workHistoryID);
     WorkHistory findWorkHistoryByPosition(String position);
     WorkHistory findWorkHistoryByDepartment(String department);
     WorkHistory findWorkHistoryByStartDate(LocalDate startDate);
     WorkHistory findWorkHistoryByEndDate(LocalDate endDate);
-    WorkHistory findWorkHistoryByAEmployeeID(Long id);
-    Optional<WorkHistory> findWorkHistoryByEmployeeId(Long id);
+    Optional<WorkHistory> findWorkHistoryByEmployeeID(Long id);
 }
