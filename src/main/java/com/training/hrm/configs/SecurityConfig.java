@@ -17,7 +17,13 @@ public class SecurityConfig {
         http
                 .csrf((csrf -> csrf.disable()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/home", "/swagger-ui/**", "/v3/**", "/person/**", "/personnel/**").permitAll()
+                        .requestMatchers(
+                                "/home",
+                                "/swagger-ui/**",
+                                "/v3/**",
+                                "/person/**",
+                                "/personnel/**",
+                                "/controller/**").permitAll()
                         .anyRequest().authenticated());
 
         return http.build();
