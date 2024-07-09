@@ -23,7 +23,8 @@ public class SecurityConfig {
                                 "/v3/**",
                                 "/person/**",
                                 "/personnel/**",
-                                "/controller/**").permitAll()
+                                "/contract/**",
+                                "/employee/**").permitAll()
                         .anyRequest().authenticated());
 
         return http.build();
