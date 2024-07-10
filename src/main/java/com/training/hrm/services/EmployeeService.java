@@ -27,4 +27,24 @@ public class EmployeeService {
             throw new ServiceRuntimeException("An error occurred while reading the employee: " + e.getMessage());
         }
     }
+
+    public Employee updateEmployee(Employee exitsEmployee, Employee employee) throws ServiceRuntimeException {
+        try {
+            exitsEmployee.setPersonID(employee.getPersonID());
+            exitsEmployee.setPersonnelID(employee.getPersonnelID());
+            exitsEmployee.setContractID(employee.getContractID());
+
+            return employeeRepository.save(exitsEmployee);
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while updating the employee: " + e.getMessage());
+        }
+    }
+
+    public void deleteEmployee(Long id) throws ServiceRuntimeException {
+        try {
+            employeeRepository.deleteById(id);
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while deleting the employee: " + e.getMessage());
+        }
+    }
 }
