@@ -51,7 +51,6 @@ public class Personnel {
     private String employeeID;
 
     @Column(name = "employee_account")
-    @NotBlank(message = "Please enter a valid employee account")
     private String employeeAccount;
 
     @Column(name = "department")

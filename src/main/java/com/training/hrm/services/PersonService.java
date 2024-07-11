@@ -16,7 +16,7 @@ public class PersonService {
     public Person createPerson(Person person) throws ServiceRuntimeException {
         try {
             return personRepository.save(person);
-        } catch (Exception e) {
+        } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while creating the person: " + e.getMessage());
         }
     }

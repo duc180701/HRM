@@ -24,7 +24,8 @@ public class SecurityConfig {
                                 "/person/**",
                                 "/personnel/**",
                                 "/contract/**",
-                                "/employee/**").permitAll()
+                                "/employee/**",
+                                "/user/**").permitAll()
                         .anyRequest().authenticated());
 
         return http.build();

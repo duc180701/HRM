@@ -1,6 +1,5 @@
 package com.training.hrm.services;
 
-import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.Contract;
 import com.training.hrm.repositories.ContractRepository;
