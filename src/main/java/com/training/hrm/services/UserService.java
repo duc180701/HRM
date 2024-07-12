@@ -4,8 +4,8 @@ import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.User;
 import com.training.hrm.repositories.UserRepository;
-import org.hibernate.tool.schema.internal.IndividuallySchemaValidatorImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +13,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public User createUser(User user) throws ServiceRuntimeException {
         try {
@@ -52,6 +55,15 @@ public class UserService {
             userRepository.deleteById(id);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while deleting the user: " + e.getMessage());
+        }
+    }
+
+    public User registerUser(User user) throws ServiceRuntimeException {
+        try {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            return userRepository.save(user);
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while registering a user: " + e.getMessage());
         }
     }
 }
