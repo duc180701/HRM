@@ -1,18 +1,13 @@
 package com.training.hrm.configs;
 
 import com.training.hrm.customservices.CustomUserDetailsService;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -38,6 +33,11 @@ public class SecurityConfig {
                                 "/contract/**",
                                 "/employee/**",
                                 "/user/**").permitAll()
+//                        .requestMatchers().hasRole("ADMIN")
+//                        .requestMatchers().hasRole("BAN_GIAM_DOC")
+//                        .requestMatchers().hasRole("TRUONG_PHONG")
+//                        .requestMatchers().hasRole("PHO_PHONG")
+//                        .requestMatchers().hasRole("NHAN_VIEN")
                         .anyRequest().authenticated());
 
         return http.build();

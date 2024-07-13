@@ -58,10 +58,9 @@ public class UserService {
         }
     }
 
-    public User registerUser(User user) throws ServiceRuntimeException {
+    public void registerUser(User user) throws ServiceRuntimeException {
         try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            return userRepository.save(user);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while registering a user: " + e.getMessage());
         }

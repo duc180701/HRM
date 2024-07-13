@@ -3,17 +3,14 @@ package com.training.hrm.controllers;
 import com.training.hrm.exceptions.BadRequestException;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
-import com.training.hrm.models.Contract;
 import com.training.hrm.models.User;
 import com.training.hrm.repositories.EmployeeRepository;
 import com.training.hrm.repositories.UserRepository;
-import com.training.hrm.services.EmployeeService;
 import com.training.hrm.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +43,8 @@ public class UserController {
                 throw new BadRequestException("User already exits");
             }
             User createUser = userService.createUser(user);
+            userService.registerUser(createUser);
+
             return new ResponseEntity<>(createUser, HttpStatus.OK);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -125,4 +124,5 @@ public class UserController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
 }

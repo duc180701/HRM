@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -101,5 +103,22 @@ public class User {
             message = "Password must contain at least one lowercase letter, one uppercase letter, one special character, and one digit"
     ) @Pattern(regexp = "\\S+", message = "Password must not contain whitespace") String password) {
         this.password = password;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(userID, user.userID) &&
+                Objects.equals(username, user.username) &&
+                Objects.equals(password, user.password) &&
+                role == user.role &&
+                Objects.equals(employeeID, user.employeeID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userID, username, password, role, employeeID);
     }
 }
