@@ -31,7 +31,7 @@ public class Personnel {
     @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Graduation school must contain only uppercase and lowercase letters")
     private String graduationSchool;
 
-    @Column(name = "graduation_ year")
+    @Column(name = "graduation_year")
     @NotNull(message = "Please enter a valid graduation year")
     private int graduationYear;
 

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -54,8 +55,10 @@ public class JwtUtil {
                     .setSubject(subject)
                     .setIssuedAt(new Date(System.currentTimeMillis()))
                     .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-                    .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+                    .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                     .compact();
+        } catch (SignatureException e) {
+            throw new RuntimeException("Failed to sign JWT token", e);
         } catch (Exception e) {
             throw new RuntimeException("Failed to create JWT token", e);
         }
