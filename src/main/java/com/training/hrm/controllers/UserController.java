@@ -3,6 +3,7 @@ package com.training.hrm.controllers;
 import com.training.hrm.components.JwtUtil;
 import com.training.hrm.customservices.CustomUserDetailsService;
 import com.training.hrm.dto.LoginRequest;
+import com.training.hrm.dto.LoginResponse;
 import com.training.hrm.exceptions.BadRequestException;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
@@ -161,9 +162,12 @@ public class UserController {
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginRequest.getUsername());
-            String jwt = jwtUtil.generateToken(userDetails);
+            String jwt = jwtUtil.generateToken(userDetails.getUsername());
 
-            return new ResponseEntity<>(jwt, HttpStatus.OK);
+            System.out.println(loginRequest.getUsername());
+            System.out.println(loginRequest.getPassword());
+            System.out.println(jwt);
+            return ResponseEntity.ok(new LoginResponse(jwt));
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (InvalidException e) {
@@ -173,6 +177,8 @@ public class UserController {
         } catch (ServiceRuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (BadRequestException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>("Invalid username or password", HttpStatus.BAD_REQUEST);
