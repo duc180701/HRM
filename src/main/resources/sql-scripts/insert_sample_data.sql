@@ -1,4 +1,4 @@
--- Chèn dữ liệu mẫu vào bảng Person
+-- Chèn dữ liệu mẫu vào bảng persons
 INSERT INTO persons (full_name, gender, birth_of_date, citizen_identity_id, citizen_identity_date, citizen_identity_where, citizen_identity_out_date, pass_port_id, pass_port_date, pass_port_where, pass_port_out_date, permanent_address, current_address, phone_number, email) VALUES
 ('John Doe', 'Male', '1990-01-01', '012345678901', '2010-01-01', 'Hanoi', '2025-01-01', '01234567', '2010-01-01', 'Hanoi', '2025-01-01', '123 Main St', '123 Main St', '0123456789', 'johndoe@example.com'),
 ('Jane Smith', 'Female', '1992-02-02', '012345678902', '2011-02-02', 'Saigon', '2026-02-02', '01234568', '2011-02-02', 'Saigon', '2026-02-02', '456 Elm St', '456 Elm St', '0123456790', 'janesmith@example.com'),
