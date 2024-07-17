@@ -3,8 +3,11 @@ package com.training.hrm.controllers;
 import com.training.hrm.exceptions.BadRequestException;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
+import com.training.hrm.models.BackupPersonnel;
 import com.training.hrm.models.Personnel;
+import com.training.hrm.repositories.BackupPersonnelRepository;
 import com.training.hrm.repositories.PersonnelRepository;
+import com.training.hrm.services.BackupService;
 import com.training.hrm.services.PersonnelService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,9 @@ public class PersonnelController {
 
     @Autowired
     private PersonnelService personnelService;
+
+    @Autowired
+    private BackupService backupService;
 
     @PostMapping("/create")
     public ResponseEntity<Object> createPersonnel(@Valid @RequestBody Personnel personnel, BindingResult result) {
@@ -67,6 +73,7 @@ public class PersonnelController {
     public ResponseEntity<Object> updatePersonnel(@PathVariable String personnelID, @Valid @RequestBody Personnel personnel, BindingResult result) {
         try {
             Personnel exitsPersonnel = personnelRepository.findPersonnelByPersonnelID(Long.parseLong(personnelID));
+
             if (exitsPersonnel == null) {
                 throw new InvalidException("Personnel not found");
             }
@@ -79,6 +86,10 @@ public class PersonnelController {
                     || personnelRepository.findPersonnelByEmployeeAccount(personnel.getEmployeeAccount()) != null) {
                 throw new BadRequestException("Personnel already exits");
             }
+
+            // Backup
+            backupService.createBackupPersonnel(personnel, Long.parseLong(personnelID));
+
             Personnel updatePersonnel = personnelService.updatePersonnel(exitsPersonnel, personnel);
             return new ResponseEntity<>(updatePersonnel, HttpStatus.OK);
         } catch (NumberFormatException e) {

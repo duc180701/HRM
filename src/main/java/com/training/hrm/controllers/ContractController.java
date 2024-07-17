@@ -5,6 +5,7 @@ import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.Contract;
 import com.training.hrm.repositories.ContractRepository;
+import com.training.hrm.services.BackupService;
 import com.training.hrm.services.ContractService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class ContractController {
 
     @Autowired
     private ContractRepository contractRepository;
+
+    @Autowired
+    private BackupService backupService;
 
     @PostMapping("/create")
     public ResponseEntity<Object> createContract(@Valid @RequestBody Contract contract, BindingResult result) {
@@ -69,6 +73,10 @@ public class ContractController {
             if(exitsContract == null) {
                 throw new InvalidException("Contract not found");
             }
+
+            // Backup
+            backupService.createBackupContract(contract, Long.parseLong(contractID));
+
             Contract updateContract = contractService.updateContract(exitsContract, contract);
             return new ResponseEntity<>(updateContract, HttpStatus.OK);
         } catch (NumberFormatException e) {
