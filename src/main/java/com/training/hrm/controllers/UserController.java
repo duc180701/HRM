@@ -162,12 +162,9 @@ public class UserController {
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginRequest.getUsername());
-            String jwt = jwtUtil.generateToken(userDetails.getUsername());
+            String jwt = jwtUtil.generateToken(userDetails);
 
-            System.out.println(loginRequest.getUsername());
-            System.out.println(loginRequest.getPassword());
-            System.out.println(jwt);
-            return ResponseEntity.ok(new LoginResponse(jwt));
+            return new ResponseEntity<>(jwt, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (InvalidException e) {
