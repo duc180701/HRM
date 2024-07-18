@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface BackupPersonnelRepository extends JpaRepository<BackupPersonnel, Long> {
-    BackupPersonnel findBackupPersonnelByPersonnelID(Long id);
+    BackupPersonnel findBackupPersonnelByBackupPersonnelID(Long id);
 }

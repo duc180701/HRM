@@ -22,13 +22,13 @@ public class BackupController {
     @Autowired
     private BackupContractRepository backupContractRepository;
 
-    @GetMapping("/read/{backupPersonnelID}")
-    public ResponseEntity<Object> readBackupByBackupPersonnelID(@PathVariable String backupPersonnelID) {
+    @GetMapping("/read-backup-personnel/{backupPersonnelID}")
+    public ResponseEntity<Object> readBackupPersonnelByBackupPersonnelID(@PathVariable String backupPersonnelID) {
         try {
-            if (backupPersonnelRepository.findBackupPersonnelByPersonnelID(Long.parseLong(backupPersonnelID)) == null) {
+            if (backupPersonnelRepository.findBackupPersonnelByBackupPersonnelID(Long.parseLong(backupPersonnelID)) == null) {
                 throw new InvalidException("This backup record not found");
             }
-            BackupPersonnel backupPersonnel = backupPersonnelRepository.findBackupPersonnelByPersonnelID(Long.parseLong(backupPersonnelID));
+            BackupPersonnel backupPersonnel = backupPersonnelRepository.findBackupPersonnelByBackupPersonnelID(Long.parseLong(backupPersonnelID));
             return new ResponseEntity<>(backupPersonnel, HttpStatus.OK);
         } catch (NumberFormatException e) {
             return new ResponseEntity<>("Invalid contract ID format", HttpStatus.BAD_REQUEST);
@@ -41,13 +41,13 @@ public class BackupController {
         }
     }
 
-    @GetMapping("/read/{backupContractID}")
-    public ResponseEntity<Object> readBackupByBackupContractID(@PathVariable String backupContractID) {
+    @GetMapping("/read-backup-contract/{backupContractID}")
+    public ResponseEntity<Object> readBackupContractByBackupContractID(@PathVariable String backupContractID) {
         try {
-            if (backupContractRepository.findBackupContractByContractID(Long.parseLong(backupContractID)) == null) {
+            if (backupContractRepository.findBackupContractByBackupContractID(Long.parseLong(backupContractID)) == null) {
                 throw new InvalidException("This backup record not found");
             }
-            BackupContract backupContract = backupContractRepository.findBackupContractByContractID(Long.parseLong(backupContractID));
+            BackupContract backupContract = backupContractRepository.findBackupContractByBackupContractID(Long.parseLong(backupContractID));
             return new ResponseEntity<>(backupContract, HttpStatus.OK);
         } catch (NumberFormatException e) {
             return new ResponseEntity<>("Invalid contract ID format", HttpStatus.BAD_REQUEST);

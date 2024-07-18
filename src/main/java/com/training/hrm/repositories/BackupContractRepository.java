@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BackupContractRepository extends JpaRepository<BackupContract, Long> {
-    BackupContract findBackupContractByContractID(Long id);
+    BackupContract findBackupContractByBackupContractID(Long id);
 }
