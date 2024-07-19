@@ -7,9 +7,11 @@ import com.training.hrm.models.BackupPersonnel;
 import com.training.hrm.models.Contract;
 import com.training.hrm.repositories.BackupContractRepository;
 import com.training.hrm.repositories.BackupPersonnelRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

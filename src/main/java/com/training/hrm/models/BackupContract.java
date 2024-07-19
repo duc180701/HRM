@@ -2,7 +2,6 @@ package com.training.hrm.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -27,15 +26,20 @@ public class BackupContract {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate endDate;
 
+    @Column(name = "reason")
+    @NotBlank(message = "Please enter valid reason")
+    private String reason;
+
     public BackupContract() {
     }
 
-    public BackupContract(Long backupContractID, Long contractID, String contractType, LocalDate startDate, LocalDate endDate) {
+    public BackupContract(Long backupContractID, Long contractID, String contractType, LocalDate startDate, LocalDate endDate, String reason) {
         this.backupContractID = backupContractID;
         this.contractID = contractID;
         this.contractType = contractType;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.reason = reason;
     }
 
     public Long getBackupContractID() {
@@ -76,5 +80,13 @@ public class BackupContract {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public @NotBlank(message = "Please enter valid reason") String getReason() {
+        return reason;
+    }
+
+    public void setReason(@NotBlank(message = "Please enter valid reason") String reason) {
+        this.reason = reason;
     }
 }

@@ -1,6 +1,7 @@
 package com.training.hrm.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "backup_personnel")
@@ -18,14 +19,19 @@ public class BackupPersonnel {
     @Column(name = "position")
     private String position;
 
+    @Column(name = "reason")
+    @NotBlank(message = "Please enter valid reason")
+    private String reason;
+
     public BackupPersonnel() {
     }
 
-    public BackupPersonnel(Long backupPersonnelID, Long personnelID, String department, String position) {
+    public BackupPersonnel(Long backupPersonnelID, Long personnelID, String department, String position, String reason) {
         this.backupPersonnelID = backupPersonnelID;
         this.personnelID = personnelID;
         this.department = department;
         this.position = position;
+        this.reason = reason;
     }
 
     public Long getBackupPersonnelID() {
@@ -58,5 +64,13 @@ public class BackupPersonnel {
 
     public void setPersonnelID(Long personnelID) {
         this.personnelID = personnelID;
+    }
+
+    public @NotBlank(message = "Please enter valid reason") String getReason() {
+        return reason;
+    }
+
+    public void setReason(@NotBlank(message = "Please enter valid reason") String reason) {
+        this.reason = reason;
     }
 }

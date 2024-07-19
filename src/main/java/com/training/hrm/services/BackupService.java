@@ -25,6 +25,7 @@ public class BackupService {
             backupPersonnel.setPersonnelID(personnelID);
             backupPersonnel.setPosition(personnel.getPosition());
             backupPersonnel.setDepartment(personnel.getDepartment());
+            backupPersonnel.setReason("UPDATE PERSONNEL");
             return backupPersonnelRepository.save(backupPersonnel);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while back up this personnel: " + e.getMessage());
@@ -38,6 +39,7 @@ public class BackupService {
             backupContract.setContractType(contract.getContractType());
             backupContract.setStartDate(contract.getStartDate());
             backupContract.setEndDate(contract.getEndDate());
+            backupContract.setReason("UPDATE CONTRACT");
             return backupContractRepository.save(backupContract);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while back up this contract: " + e.getMessage());
