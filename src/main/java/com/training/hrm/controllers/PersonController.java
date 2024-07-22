@@ -1,9 +1,12 @@
 package com.training.hrm.controllers;
 
+import com.training.hrm.dto.PersonRequest;
+import com.training.hrm.dto.PersonnelRequest;
 import com.training.hrm.exceptions.BadRequestException;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.Person;
+import com.training.hrm.models.Personnel;
 import com.training.hrm.repositories.PersonRepository;
 import com.training.hrm.services.PersonService;
 import jakarta.validation.Valid;
@@ -24,18 +27,18 @@ public class PersonController {
     public PersonRepository personRepository;
 
     @PostMapping("/create")
-    public ResponseEntity<Object> createPerson (@Valid @RequestBody Person person, BindingResult result) {
+    public ResponseEntity<Object> createPerson (@Valid @RequestBody PersonRequest personRequest, BindingResult result) {
         try {
             if (result.hasErrors()) {
                 throw new BadRequestException(result.getAllErrors().get(0).getDefaultMessage());
             }
-            if (personRepository.findPersonByEmail(person.getEmail()) != null
-                    || personRepository.findPersonByCitizenIdentity_CitizenIdentityID(person.getCitizenIdentity().getCitizenIdentityID()) != null
-                    || personRepository.findPersonByPassPort_PassPortID(person.getPassPort().getPassPortID()) != null
-                    || personRepository.findPersonByPhoneNumber(person.getPhoneNumber()) != null) {
+            if (personRepository.findPersonByEmail(personRequest.getEmail()) != null
+                    || personRepository.findPersonByCitizenIdentity_CitizenIdentityID(personRequest.getCitizenIdentity().getCitizenIdentityID()) != null
+                    || personRepository.findPersonByPassPort_PassPortID(personRequest.getPassPort().getPassPortID()) != null
+                    || personRepository.findPersonByPhoneNumber(personRequest.getPhoneNumber()) != null) {
                 throw new BadRequestException("Person already exits");
             }
-            Person createPerson = personService.createPerson(person);
+            Person createPerson = personService.createPerson(personRequest);
             return new ResponseEntity<>(createPerson, HttpStatus.CREATED);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -62,22 +65,41 @@ public class PersonController {
     }
 
     @PostMapping("/update/{personID}")
-    public ResponseEntity<Object> updatePerson(@PathVariable String personID, @Valid @RequestBody Person person, BindingResult result) throws Exception {
+    public ResponseEntity<Object> updatePerson(@PathVariable String personID, @Valid @RequestBody PersonRequest personRequest, BindingResult result) throws Exception {
         try {
-            Person updatePerson = personRepository.findPersonByPersonID(Long.parseLong(personID));
-            if (person == null) {
+            Person exitsPerson = personRepository.findPersonByPersonID(Long.parseLong(personID));
+            if (exitsPerson == null) {
                 throw new InvalidException("Person not found");
             }
             if (result.hasErrors()) {
                 throw new BadRequestException(result.getAllErrors().get(0).getDefaultMessage());
             }
-            if (personRepository.findPersonByEmail(person.getEmail()) != null
-                    || personRepository.findPersonByCitizenIdentity_CitizenIdentityID(person.getCitizenIdentity().getCitizenIdentityID()) != null
-                    || personRepository.findPersonByPassPort_PassPortID(person.getPassPort().getPassPortID()) != null
-                    || personRepository.findPersonByPhoneNumber(person.getPhoneNumber()) != null) {
-                throw new BadRequestException("Person already exits");
+            if (personRequest.getEmail() != exitsPerson.getEmail()) {
+                Person findPerson = personRepository.findPersonByEmail(personRequest.getEmail());
+                if (findPerson != null && findPerson.getPersonID() != Long.parseLong(personID)) {
+                    throw new BadRequestException("Person already exits");
+                }
             }
-            Person afterUpdatePerson = personService.updatePerson(updatePerson, person);
+            if (personRequest.getCitizenIdentity().getCitizenIdentityID() != exitsPerson.getCitizenIdentity().getCitizenIdentityID()) {
+                Person findPerson = personRepository.findPersonByCitizenIdentity_CitizenIdentityID(personRequest.getCitizenIdentity().getCitizenIdentityID());
+                if (findPerson != null && findPerson.getPersonID() != Long.parseLong(personID)) {
+                    throw new BadRequestException("Person already exits");
+                }
+            }
+            if (personRequest.getPassPort().getPassPortID() != exitsPerson.getPassPort().getPassPortID()) {
+                Person findPerson = personRepository.findPersonByPassPort_PassPortID(personRequest.getPassPort().getPassPortID());
+                if (findPerson != null && findPerson.getPersonID() != Long.parseLong(personID)) {
+                    throw new BadRequestException("Person already exits");
+                }
+            }
+            if (personRequest.getPhoneNumber() != exitsPerson.getPhoneNumber()) {
+                Person findPerson = personRepository.findPersonByPhoneNumber(personRequest.getPhoneNumber());
+                if (findPerson != null && findPerson.getPersonID() != Long.parseLong(personID)) {
+                    throw new BadRequestException("Person already exits");
+                }
+            }
+
+            Person afterUpdatePerson = personService.updatePerson(exitsPerson, personRequest);
             return new ResponseEntity<>(afterUpdatePerson, HttpStatus.OK);
         } catch (NumberFormatException e) {
             return new ResponseEntity<>("Invalid person ID format", HttpStatus.BAD_REQUEST);
