@@ -1,5 +1,6 @@
 package com.training.hrm.controllers;
 
+import com.training.hrm.dto.ContractRequest;
 import com.training.hrm.exceptions.BadRequestException;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
@@ -28,12 +29,12 @@ public class ContractController {
     private BackupService backupService;
 
     @PostMapping("/create")
-    public ResponseEntity<Object> createContract(@Valid @RequestBody Contract contract, BindingResult result) {
+    public ResponseEntity<Object> createContract(@Valid @RequestBody ContractRequest contractRequest, BindingResult result) {
         try {
             if (result.hasErrors()) {
                 throw new BadRequestException(result.getAllErrors().get(0).getDefaultMessage());
             }
-            Contract createContract = contractService.createContract(contract);
+            Contract createContract = contractService.createContract(contractRequest);
             return new ResponseEntity<>(createContract, HttpStatus.OK);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -64,7 +65,7 @@ public class ContractController {
     }
 
     @PostMapping("/update/{contractID}")
-    public ResponseEntity<Object> updateContract(@PathVariable String contractID, @Valid @RequestBody Contract contract, BindingResult result) {
+    public ResponseEntity<Object> updateContract(@PathVariable String contractID, @Valid @RequestBody ContractRequest contractRequest, BindingResult result) {
         try {
             if (result.hasErrors()) {
                 throw new BadRequestException(result.getAllErrors().get(0).getDefaultMessage());
@@ -75,9 +76,9 @@ public class ContractController {
             }
 
             // Backup
-            backupService.createBackupContract(contract, Long.parseLong(contractID));
+            backupService.createBackupContract(exitsContract, Long.parseLong(contractID));
 
-            Contract updateContract = contractService.updateContract(exitsContract, contract);
+            Contract updateContract = contractService.updateContract(exitsContract, contractRequest);
             return new ResponseEntity<>(updateContract, HttpStatus.OK);
         } catch (NumberFormatException e) {
             return new ResponseEntity<>("Invalid contract ID format", HttpStatus.BAD_REQUEST);

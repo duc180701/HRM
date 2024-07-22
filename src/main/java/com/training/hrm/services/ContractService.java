@@ -1,5 +1,6 @@
 package com.training.hrm.services;
 
+import com.training.hrm.dto.ContractRequest;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.Contract;
 import com.training.hrm.repositories.ContractRepository;
@@ -12,8 +13,15 @@ public class ContractService {
     @Autowired
     private ContractRepository contractRepository;
 
-    public Contract createContract(Contract contract) throws ServiceRuntimeException{
+    public Contract createContract(ContractRequest contractRequest) throws ServiceRuntimeException{
         try {
+            Contract contract = new Contract();
+
+            contract.setContractType(contractRequest.getContractType());
+            contract.setSalary(contractRequest.getSalary());
+            contract.setStartDate(contractRequest.getStartDate());
+            contract.setEndDate(contractRequest.getEndDate());
+
             return contractRepository.save(contract);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while creating the contract: " + e.getMessage());
@@ -28,11 +36,11 @@ public class ContractService {
         }
     }
 
-    public Contract updateContract(Contract exitsContract, Contract contract) throws ServiceRuntimeException {
+    public Contract updateContract(Contract exitsContract, ContractRequest contractRequest) throws ServiceRuntimeException {
         try {
-            exitsContract.setContractType(contract.getContractType());
-            exitsContract.setStartDate(contract.getStartDate());
-            exitsContract.setEndDate(contract.getEndDate());
+            exitsContract.setContractType(contractRequest.getContractType());
+            exitsContract.setStartDate(contractRequest.getStartDate());
+            exitsContract.setEndDate(contractRequest.getEndDate());
 
             return contractRepository.save(exitsContract);
         } catch (ServiceRuntimeException e) {

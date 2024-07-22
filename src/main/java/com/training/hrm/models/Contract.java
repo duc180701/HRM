@@ -15,25 +15,24 @@ public class Contract {
     private Long contractID;
 
     @Column(name = "contract_type")
-    @NotBlank(message = "Please enter a valid contract type")
     private String contractType;
 
+    @Column(name = "salary")
+    private Long salary;
+
     @Column(name = "start_date")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    @NotNull(message = "Please enter a valid start date")
     private LocalDate startDate;
 
     @Column(name = "end_date")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    @NotNull(message = "Please enter a valid end date")
     private LocalDate endDate;
 
     public Contract() {
     }
 
-    public Contract(Long contractID, String contractType, LocalDate startDate, LocalDate endDate) {
+    public Contract(Long contractID, String contractType, Long salary, LocalDate startDate, LocalDate endDate) {
         this.contractID = contractID;
         this.contractType = contractType;
+        this.salary = salary;
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -52,6 +51,14 @@ public class Contract {
 
     public void setContractType(String contractType) {
         this.contractType = contractType;
+    }
+
+    public Long getSalary() {
+        return salary;
+    }
+
+    public void setSalary(Long salary) {
+        this.salary = salary;
     }
 
     public LocalDate getStartDate() {

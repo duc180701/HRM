@@ -91,7 +91,7 @@ public class PersonnelController {
             }
 
             // Backup
-            backupService.createBackupPersonnel(personnelRequest, Long.parseLong(personnelID));
+            backupService.createBackupPersonnel(exitsPersonnel, Long.parseLong(personnelID));
 
             Personnel updatePersonnel = personnelService.updatePersonnel(exitsPersonnel, personnelRequest);
             return new ResponseEntity<>(updatePersonnel, HttpStatus.OK);
