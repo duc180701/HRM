@@ -2,7 +2,6 @@ package com.training.hrm.models;
 
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "personnels")
@@ -12,71 +11,45 @@ public class Personnel {
     private Long personnelID;
 
     @Column(name = "level")
-    @NotBlank(message = "Please enter a valid level")
-    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Level must contain only uppercase and lowercase letters")
     private String level;
 
     @Column(name = "education")
-    @NotBlank(message = "Please enter a valid education")
-    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Education must contain only uppercase and lowercase letters")
     private String education;
 
     @Column(name = "graduation_major")
-    @NotBlank(message = "Please enter a valid graduation major")
-    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Graduation major must contain only uppercase and lowercase letters")
     private String graduationMajor;
 
     @Column(name = "graduation_school")
-    @NotBlank(message = "Please enter a valid graduation school")
-    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Graduation school must contain only uppercase and lowercase letters")
     private String graduationSchool;
 
     @Column(name = "graduation_year")
-    @NotNull(message = "Please enter a valid graduation year")
     private int graduationYear;
 
     @Column(name = "internal_phone_number")
-    @NotBlank(message = "Please enter a valid internal phone number")
-    @Pattern(regexp = "^[0-9]+$", message = "Internal phone number must contain only numbers")
-    @Pattern(regexp = "^0\\d{9}$", message = "Internal phone number must be 10 characters long and start with 0")
     private String internalPhoneNumber;
 
     @Column(name = "internal_email")
-    @NotBlank(message = "Please enter a valid email")
-    @Email(message = "Please enter a valid email")
     private String internalEmail;
-
-    @Column(name = "employee_id")
-    @NotBlank(message = "Please enter a valid employee id")
-    private String employeeID;
 
     @Column(name = "employee_account")
     private String employeeAccount;
 
     @Column(name = "department")
-    @NotBlank(message = "Please enter a valid department")
-    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Department must contain only uppercase and lowercase letters")
     private String department;
 
     @Column(name = "position")
-    @NotBlank(message = "Please enter a valid position")
-    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Position must contain only uppercase and lowercase letters")
     private String position;
 
     @Column(name = "direct_management_staff")
-    @NotBlank(message = "Please enter a valid direct management staff")
-    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Direct management staff must contain only uppercase and lowercase letters")
     private String directManagementStaff;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    @NotNull(message = "Please enter a valid status")
-    private Status status;
+    private String status;
 
     public Personnel() {
     }
 
-    public Personnel(Long personnelID, String level, String education, String graduationMajor, String graduationSchool, int graduationYear, String internalPhoneNumber, String internalEmail, String employeeID, String employeeAccount, String department, String position, String directManagementStaff, Status status) {
+    public Personnel(Long personnelID, String level, String education, String graduationMajor, String graduationSchool, int graduationYear, String internalPhoneNumber, String internalEmail, String employeeAccount, String department, String position, String directManagementStaff, String status) {
         this.personnelID = personnelID;
         this.level = level;
         this.education = education;
@@ -85,7 +58,6 @@ public class Personnel {
         this.graduationYear = graduationYear;
         this.internalPhoneNumber = internalPhoneNumber;
         this.internalEmail = internalEmail;
-        this.employeeID = employeeID;
         this.employeeAccount = employeeAccount;
         this.department = department;
         this.position = position;
@@ -157,14 +129,6 @@ public class Personnel {
         this.internalEmail = internalEmail;
     }
 
-    public String getEmployeeID() {
-        return employeeID;
-    }
-
-    public void setEmployeeID(String employeeID) {
-        this.employeeID = employeeID;
-    }
-
     public String getEmployeeAccount() {
         return employeeAccount;
     }
@@ -197,17 +161,11 @@ public class Personnel {
         this.directManagementStaff = directManagementStaff;
     }
 
-    public Status getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(String status) {
         this.status = status;
-    }
-
-    public enum Status {
-        DANG_LAM_VIEC,
-        NGHI_CHE_DO,
-        NGHI_THAI_SAN
     }
 }

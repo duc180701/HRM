@@ -1,5 +1,6 @@
 package com.training.hrm.services;
 
+import com.training.hrm.dto.PersonnelRequest;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.Personnel;
@@ -13,8 +14,23 @@ public class PersonnelService {
     @Autowired
     private PersonnelRepository personnelRepository;
 
-    public Personnel createPersonnel(Personnel personnel) throws ServiceRuntimeException {
+    public Personnel createPersonnel(PersonnelRequest personnelRequest) throws ServiceRuntimeException {
         try {
+            Personnel personnel = new Personnel();
+
+            personnel.setLevel(personnelRequest.getLevel());
+            personnel.setEducation(personnelRequest.getEducation());
+            personnel.setGraduationMajor(personnelRequest.getGraduationMajor());
+            personnel.setGraduationSchool(personnelRequest.getGraduationSchool());
+            personnel.setGraduationYear(personnelRequest.getGraduationYear());
+            personnel.setInternalPhoneNumber(personnelRequest.getInternalPhoneNumber());
+            personnel.setInternalEmail(personnelRequest.getInternalEmail());
+            personnel.setEmployeeAccount(personnelRequest.getEmployeeAccount());
+            personnel.setDepartment(personnelRequest.getDepartment());
+            personnel.setPosition(personnelRequest.getPosition());
+            personnel.setDirectManagementStaff(personnelRequest.getDirectManagementStaff());
+            personnel.setStatus(personnelRequest.getStatus().toString());
+
             return personnelRepository.save(personnel);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while creating the personnel: " + e.getMessage());
@@ -35,21 +51,20 @@ public class PersonnelService {
         }
     }
 
-    public Personnel updatePersonnel(Personnel exitsPersonnel, Personnel personnel) {
+    public Personnel updatePersonnel(Personnel exitsPersonnel, PersonnelRequest personnelRequest) {
         try {
-            exitsPersonnel.setLevel(personnel.getLevel());
-            exitsPersonnel.setEducation(personnel.getEducation());
-            exitsPersonnel.setGraduationMajor(personnel.getGraduationMajor());
-            exitsPersonnel.setGraduationSchool(personnel.getGraduationSchool());
-            exitsPersonnel.setGraduationYear(personnel.getGraduationYear());
-            exitsPersonnel.setInternalPhoneNumber(personnel.getInternalPhoneNumber());
-            exitsPersonnel.setInternalEmail(personnel.getInternalEmail());
-            exitsPersonnel.setEmployeeID(personnel.getEmployeeID());
-            exitsPersonnel.setEmployeeAccount(personnel.getEmployeeAccount());
-            exitsPersonnel.setDepartment(personnel.getDepartment());
-            exitsPersonnel.setPosition(personnel.getPosition());
-            exitsPersonnel.setDirectManagementStaff(personnel.getDirectManagementStaff());
-            exitsPersonnel.setStatus(personnel.getStatus());
+            exitsPersonnel.setLevel(personnelRequest.getLevel());
+            exitsPersonnel.setEducation(personnelRequest.getEducation());
+            exitsPersonnel.setGraduationMajor(personnelRequest.getGraduationMajor());
+            exitsPersonnel.setGraduationSchool(personnelRequest.getGraduationSchool());
+            exitsPersonnel.setGraduationYear(personnelRequest.getGraduationYear());
+            exitsPersonnel.setInternalPhoneNumber(personnelRequest.getInternalPhoneNumber());
+            exitsPersonnel.setInternalEmail(personnelRequest.getInternalEmail());
+            exitsPersonnel.setEmployeeAccount(personnelRequest.getEmployeeAccount());
+            exitsPersonnel.setDepartment(personnelRequest.getDepartment());
+            exitsPersonnel.setPosition(personnelRequest.getPosition());
+            exitsPersonnel.setDirectManagementStaff(personnelRequest.getDirectManagementStaff());
+            exitsPersonnel.setStatus(personnelRequest.getStatus().toString());
 
             return personnelRepository.save(exitsPersonnel);
         } catch (ServiceRuntimeException e) {

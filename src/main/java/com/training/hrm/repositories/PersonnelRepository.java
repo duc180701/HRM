@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface PersonnelRepository extends JpaRepository<Personnel, Long> {
     Personnel findPersonnelByInternalPhoneNumber(String phoneNumber);
     Personnel findPersonnelByInternalEmail(String email);
-    Personnel findPersonnelByEmployeeID(String employeeID);
     Personnel findPersonnelByEmployeeAccount(String employeeAccount);
     Personnel findPersonnelByPersonnelID(Long id);
 }

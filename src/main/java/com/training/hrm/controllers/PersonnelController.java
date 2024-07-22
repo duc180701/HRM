@@ -1,11 +1,10 @@
 package com.training.hrm.controllers;
 
+import com.training.hrm.dto.PersonnelRequest;
 import com.training.hrm.exceptions.BadRequestException;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
-import com.training.hrm.models.BackupPersonnel;
 import com.training.hrm.models.Personnel;
-import com.training.hrm.repositories.BackupPersonnelRepository;
 import com.training.hrm.repositories.PersonnelRepository;
 import com.training.hrm.services.BackupService;
 import com.training.hrm.services.PersonnelService;
@@ -30,18 +29,16 @@ public class PersonnelController {
     private BackupService backupService;
 
     @PostMapping("/create")
-    public ResponseEntity<Object> createPersonnel(@Valid @RequestBody Personnel personnel, BindingResult result) {
+    public ResponseEntity<Object> createPersonnel(@Valid @RequestBody PersonnelRequest personnelRequest, BindingResult result) {
             try {
                 if (result.hasErrors()) {
                     throw new BadRequestException(result.getAllErrors().get(0).getDefaultMessage());
                 }
-                if (personnelRepository.findPersonnelByEmployeeID(personnel.getEmployeeID()) != null
-                        || personnelRepository.findPersonnelByInternalEmail(personnel.getInternalEmail()) != null
-                        || personnelRepository.findPersonnelByInternalPhoneNumber(personnel.getInternalPhoneNumber()) != null
-                        || personnelRepository.findPersonnelByEmployeeAccount(personnel.getEmployeeAccount()) != null) {
+                if (personnelRepository.findPersonnelByInternalEmail(personnelRequest.getInternalEmail()) != null
+                        || personnelRepository.findPersonnelByInternalPhoneNumber(personnelRequest.getInternalPhoneNumber()) != null) {
                     throw new BadRequestException("Personnel already exits");
                 }
-                Personnel newPersonnel = personnelService.createPersonnel(personnel);
+                Personnel newPersonnel = personnelService.createPersonnel(personnelRequest);
                 return new ResponseEntity<>(newPersonnel, HttpStatus.CREATED);
             } catch (BadRequestException e) {
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -70,7 +67,7 @@ public class PersonnelController {
     }
 
     @PostMapping("/update/{personnelID}")
-    public ResponseEntity<Object> updatePersonnel(@PathVariable String personnelID, @Valid @RequestBody Personnel personnel, BindingResult result) {
+    public ResponseEntity<Object> updatePersonnel(@PathVariable String personnelID, @Valid @RequestBody PersonnelRequest personnelRequest, BindingResult result) {
         try {
             Personnel exitsPersonnel = personnelRepository.findPersonnelByPersonnelID(Long.parseLong(personnelID));
 
@@ -80,17 +77,23 @@ public class PersonnelController {
             if (result.hasErrors()) {
                 throw new BadRequestException(result.getAllErrors().get(0).getDefaultMessage());
             }
-            if (personnelRepository.findPersonnelByEmployeeID(personnel.getEmployeeID()) != null
-                    || personnelRepository.findPersonnelByInternalEmail(personnel.getInternalEmail()) != null
-                    || personnelRepository.findPersonnelByInternalPhoneNumber(personnel.getInternalPhoneNumber()) != null
-                    || personnelRepository.findPersonnelByEmployeeAccount(personnel.getEmployeeAccount()) != null) {
-                throw new BadRequestException("Personnel already exits");
+            if (personnelRequest.getInternalPhoneNumber() != exitsPersonnel.getInternalPhoneNumber()) {
+                Personnel findPersonnel = personnelRepository.findPersonnelByInternalPhoneNumber(personnelRequest.getInternalPhoneNumber());
+                if (findPersonnel != null && findPersonnel.getPersonnelID() != Long.parseLong(personnelID)) {
+                    throw new BadRequestException("Personnel already exits");
+                }
+            }
+            if (personnelRequest.getInternalEmail() != exitsPersonnel.getInternalEmail()) {
+                Personnel findPersonnel = personnelRepository.findPersonnelByInternalEmail(personnelRequest.getInternalEmail());
+                if (findPersonnel != null && findPersonnel.getPersonnelID() != Long.parseLong(personnelID)) {
+                    throw new BadRequestException("Personnel already exits");
+                }
             }
 
             // Backup
-            backupService.createBackupPersonnel(personnel, Long.parseLong(personnelID));
+            backupService.createBackupPersonnel(personnelRequest, Long.parseLong(personnelID));
 
-            Personnel updatePersonnel = personnelService.updatePersonnel(exitsPersonnel, personnel);
+            Personnel updatePersonnel = personnelService.updatePersonnel(exitsPersonnel, personnelRequest);
             return new ResponseEntity<>(updatePersonnel, HttpStatus.OK);
         } catch (NumberFormatException e) {
             return new ResponseEntity<>("Invalid personnel ID format", HttpStatus.BAD_REQUEST);

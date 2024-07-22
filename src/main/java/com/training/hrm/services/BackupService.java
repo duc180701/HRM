@@ -1,5 +1,6 @@
 package com.training.hrm.services;
 
+import com.training.hrm.dto.PersonnelRequest;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.BackupContract;
 import com.training.hrm.models.BackupPersonnel;
@@ -19,12 +20,12 @@ public class BackupService {
     @Autowired
     private BackupContractRepository backupContractRepository;
 
-    public BackupPersonnel createBackupPersonnel(Personnel personnel, Long personnelID) throws ServiceRuntimeException {
+    public BackupPersonnel createBackupPersonnel(PersonnelRequest personnelRequest, Long personnelID) throws ServiceRuntimeException {
         try {
             BackupPersonnel backupPersonnel = new BackupPersonnel();
             backupPersonnel.setPersonnelID(personnelID);
-            backupPersonnel.setPosition(personnel.getPosition());
-            backupPersonnel.setDepartment(personnel.getDepartment());
+            backupPersonnel.setPosition(personnelRequest.getPosition());
+            backupPersonnel.setDepartment(personnelRequest.getDepartment());
             backupPersonnel.setReason("UPDATE PERSONNEL");
             return backupPersonnelRepository.save(backupPersonnel);
         } catch (ServiceRuntimeException e) {
