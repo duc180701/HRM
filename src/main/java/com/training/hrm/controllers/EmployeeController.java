@@ -203,8 +203,13 @@ public class EmployeeController {
     public ResponseEntity<Object> filterEmployee (@PathVariable String condition) {
         try {
             switch (condition) {
-                case "1":
-                    return new ResponseEntity<>("11111", HttpStatus.OK);
+                case "getAllEmployee":
+                case "retired":
+                case "training":
+                case "working":
+                case "rest":
+                case "maternityRest":
+                case "noContract":
                 default:
                     return new ResponseEntity<>("Default", HttpStatus.OK);
             }
