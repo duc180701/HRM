@@ -1,5 +1,6 @@
 package com.training.hrm.controllers;
 
+import com.training.hrm.dto.EmployeeRequest;
 import com.training.hrm.exceptions.BadRequestException;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
@@ -39,30 +40,30 @@ public class EmployeeController {
     private ContractRepository contractRepository;
 
     @PostMapping("/create")
-    public ResponseEntity<Object> createEmployee(@Valid @RequestBody Employee employee, BindingResult result) {
+    public ResponseEntity<Object> createEmployee(@Valid @RequestBody EmployeeRequest employeeRequest, BindingResult result) {
         try {
             if (result.hasErrors()) {
                 throw new BadRequestException(result.getAllErrors().get(0).getDefaultMessage());
             }
-            if (personnelRepository.findPersonnelByPersonnelID(employee.getPersonnelID()) == null) {
+            if (personnelRepository.findPersonnelByPersonnelID(employeeRequest.getPersonnelID()) == null) {
                 throw new InvalidException("Personnel not found");
             }
-            if (personRepository.findPersonByPersonID(employee.getPersonID()) == null) {
+            if (personRepository.findPersonByPersonID(employeeRequest.getPersonID()) == null) {
                 throw new InvalidException("Person not found");
             }
-            if (contractRepository.findContractByContractID(employee.getContractID()) == null) {
+            if (contractRepository.findContractByContractID(employeeRequest.getContractID()) == null) {
                 throw new InvalidException("Contract not found");
             }
-            if (employeeRepository.findEmployeeByEmployeeID(employee.getEmployeeID()) != null) {
+            if (employeeRepository.findEmployeeByEmployeeID(employeeRequest.getEmployeeID()) != null) {
                 throw new BadRequestException("Employee already exits");
             }
-            if (employeeRepository.findEmployeeByPersonID(employee.getPersonID()) != null) {
+            if (employeeRepository.findEmployeeByPersonID(employeeRequest.getPersonID()) != null) {
                 throw new BadRequestException("Person is already linked");
             }
-            if (employeeRepository.findEmployeeByPersonnelID(employee.getPersonnelID()) != null) {
+            if (employeeRepository.findEmployeeByPersonnelID(employeeRequest.getPersonnelID()) != null) {
                 throw new BadRequestException("Personnel is already linked");
             }
-            Employee createEmployee = employeeService.createEmployee(employee);
+            Employee createEmployee = employeeService.createEmployee(employeeRequest);
             return new ResponseEntity<>(createEmployee, HttpStatus.OK);
         } catch (NumberFormatException e) {
             return new ResponseEntity<>("Invalid employee ID format", HttpStatus.BAD_REQUEST);
@@ -97,7 +98,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/update/{employeeID}")
-    public ResponseEntity<Object> updateEmployee(@PathVariable String employeeID, @Valid @RequestBody Employee employee, BindingResult result) {
+    public ResponseEntity<Object> updateEmployee(@PathVariable String employeeID, @Valid @RequestBody EmployeeRequest employeeRequest, BindingResult result) {
         try {
             Employee exitsEmployee = employeeRepository.findEmployeeByEmployeeID(Long.parseLong(employeeID));
             if (exitsEmployee == null) {
@@ -106,22 +107,22 @@ public class EmployeeController {
             if (result.hasErrors()) {
                 throw new BadRequestException(result.getAllErrors().get(0).getDefaultMessage());
             }
-            if (personnelRepository.findPersonnelByPersonnelID(employee.getPersonnelID()) == null) {
+            if (personnelRepository.findPersonnelByPersonnelID(employeeRequest.getPersonnelID()) == null) {
                 throw new InvalidException("Personnel not found");
             }
-            if (personRepository.findPersonByPersonID(employee.getPersonID()) == null) {
+            if (personRepository.findPersonByPersonID(employeeRequest.getPersonID()) == null) {
                 throw new InvalidException("Person not found");
             }
-            if (contractRepository.findContractByContractID(employee.getContractID()) == null) {
+            if (contractRepository.findContractByContractID(employeeRequest.getContractID()) == null) {
                 throw new InvalidException("Contract not found");
             }
-            if (employeeRepository.findEmployeeByPersonID(employee.getPersonID()) != null) {
+            if (employeeRepository.findEmployeeByPersonID(employeeRequest.getPersonID()) != null) {
                 throw new BadRequestException("Person is already linked");
             }
-            if (employeeRepository.findEmployeeByPersonnelID(employee.getPersonnelID()) != null) {
+            if (employeeRepository.findEmployeeByPersonnelID(employeeRequest.getPersonnelID()) != null) {
                 throw new BadRequestException("Personnel is already linked");
             }
-            Employee updateEmployee = employeeService.updateEmployee(exitsEmployee, employee);
+            Employee updateEmployee = employeeService.updateEmployee(exitsEmployee, employeeRequest);
             return new ResponseEntity<>(updateEmployee, HttpStatus.OK);
         } catch (NumberFormatException e) {
             return new ResponseEntity<>("Invalid employee ID format", HttpStatus.BAD_REQUEST);

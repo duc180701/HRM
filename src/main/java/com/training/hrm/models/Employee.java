@@ -1,7 +1,6 @@
 package com.training.hrm.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "employees")
@@ -11,15 +10,12 @@ public class Employee {
     private Long employeeID;
 
     @Column(name = "personnel_id")
-    @NotNull(message = "Please enter a valid personnel id")
     private Long personnelID;
 
     @Column(name = "person_id")
-    @NotNull(message = "Please enter a valid person id")
     private Long personID;
 
     @Column(name = "contract_id")
-    @NotNull(message = "Please enter a valid contract id")
     private Long contractID;
 
     public Employee() {

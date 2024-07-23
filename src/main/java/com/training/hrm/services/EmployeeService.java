@@ -1,5 +1,6 @@
 package com.training.hrm.services;
 
+import com.training.hrm.dto.EmployeeRequest;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.Employee;
 import com.training.hrm.repositories.EmployeeRepository;
@@ -12,8 +13,15 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    public Employee createEmployee(Employee employee) throws ServiceRuntimeException {
+    public Employee createEmployee(EmployeeRequest employeeRequest) throws ServiceRuntimeException {
         try {
+
+            Employee employee = new Employee();
+
+            employee.setContractID(employeeRequest.getContractID());
+            employee.setPersonnelID(employeeRequest.getPersonnelID());
+            employee.setPersonID(employeeRequest.getPersonID());
+
             return employeeRepository.save(employee);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while creating the employee: " + e.getMessage());
@@ -28,11 +36,11 @@ public class EmployeeService {
         }
     }
 
-    public Employee updateEmployee(Employee exitsEmployee, Employee employee) throws ServiceRuntimeException {
+    public Employee updateEmployee(Employee exitsEmployee, EmployeeRequest employeeRequest) throws ServiceRuntimeException {
         try {
-            exitsEmployee.setPersonID(employee.getPersonID());
-            exitsEmployee.setPersonnelID(employee.getPersonnelID());
-            exitsEmployee.setContractID(employee.getContractID());
+            exitsEmployee.setPersonID(employeeRequest.getPersonID());
+            exitsEmployee.setPersonnelID(employeeRequest.getPersonnelID());
+            exitsEmployee.setContractID(employeeRequest.getContractID());
 
             return employeeRepository.save(exitsEmployee);
         } catch (ServiceRuntimeException e) {
