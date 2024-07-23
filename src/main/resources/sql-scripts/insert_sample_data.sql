@@ -12,8 +12,7 @@ INSERT INTO personnels (level, education, graduation_major, graduation_school, g
 ('Junior', 'Master', 'Information Technology', 'Saigon University', 2012, '0123456790', 'jane.doe@company.com', 'janedoe', 'IT', 'Tester', 'John Doe', 'DANG_LAM_VIEC'),
 ('Mid-level', 'Bachelor', 'Software Engineering', 'Danang University', 2011, '0123456791', 'alice.johnson@company.com', 'alicejohnson', 'IT', 'Project Manager', 'Bob Brown', 'NGHI_CHE_DO'),
 ('Lead', 'PhD', 'Data Science', 'Hue University', 2008, '0123456792', 'bob.brown@company.com', 'bobbrown', 'Data', 'Data Scientist', 'Charlie Davis', 'NGHI_THAI_SAN'),
-('Entry', 'Bachelor', 'Information Systems', 'Hanoi University', 2015, '0123456793', 'charlie.davis@company.com', 'charliedavis', 'IT', 'System Administrator', 'Alice Johnson', 'DANG_LAM_VIEC'),
-('Mid-Level', 'Lancelot', 'BE Dev', 'PTIT', 2015, '0193456793', 'lance.lot@company.com', '', 'IT', 'System Administrator', 'Alice Johnson', 'THU_VIEC');
+('Entry', 'Bachelor', 'Information Systems', 'Hanoi University', 2015, '0123456793', 'charlie.davis@company.com', 'charliedavis', 'IT', 'System Administrator', 'Alice Johnson', 'DANG_LAM_VIEC');
 
 -- Chèn dữ liệu mẫu vào bảng contracts
 INSERT INTO contracts (contract_type, start_date, end_date) VALUES

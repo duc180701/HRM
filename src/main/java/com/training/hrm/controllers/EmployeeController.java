@@ -1,11 +1,13 @@
 package com.training.hrm.controllers;
 
 import com.training.hrm.dto.EmployeeRequest;
+import com.training.hrm.dto.EmployeeResponse;
 import com.training.hrm.exceptions.BadRequestException;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.Employee;
 import com.training.hrm.models.Person;
+import com.training.hrm.models.Personnel;
 import com.training.hrm.repositories.ContractRepository;
 import com.training.hrm.repositories.EmployeeRepository;
 import com.training.hrm.repositories.PersonRepository;
@@ -13,12 +15,16 @@ import com.training.hrm.repositories.PersonnelRepository;
 import com.training.hrm.services.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.spel.ast.OpAnd;
 import org.springframework.http.HttpLogging;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/employee")
@@ -53,9 +59,6 @@ public class EmployeeController {
             }
             if (contractRepository.findContractByContractID(employeeRequest.getContractID()) == null) {
                 throw new InvalidException("Contract not found");
-            }
-            if (employeeRepository.findEmployeeByEmployeeID(employeeRequest.getEmployeeID()) != null) {
-                throw new BadRequestException("Employee already exits");
             }
             if (employeeRepository.findEmployeeByPersonID(employeeRequest.getPersonID()) != null) {
                 throw new BadRequestException("Person is already linked");
@@ -151,6 +154,60 @@ public class EmployeeController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/search/{search}")
+    public ResponseEntity<Object> searchEmployee(@PathVariable String search) {
+        try {
+            List<Person> searchByFullName = employeeService.searchEmployeeByFullName(search);
+            if (searchByFullName.isEmpty()) {
+                Personnel searchByPhoneNumberOrEmail = employeeService.searchEmployeeByPersonnelPhoneNumberOrEmail(search);
+                if (searchByPhoneNumberOrEmail == null) {
+                    Employee searchByEmployeeID = employeeService.searchEmployeeByEmployeeID(search);
+                    if (searchByEmployeeID == null) {
+                        throw new InvalidException("Employee not found");
+                    } else {
+                        EmployeeResponse employeeResponse = employeeService.addEmployeeResponseByEmployeeID(searchByEmployeeID.getEmployeeID());
+                        return new ResponseEntity<>(employeeResponse, HttpStatus.OK);
+                    }
+                } else {
+                    EmployeeResponse employeeResponse = employeeService.addEmployeeResponseByInternalPhoneNumberOrInternalEmail(searchByPhoneNumberOrEmail.getInternalPhoneNumber());
+                    return new ResponseEntity<>(employeeResponse, HttpStatus.OK);
+                }
+            } else {
+                List<EmployeeResponse> listEmployeeResponse = new ArrayList<>();
+                for (Person person : searchByFullName) {
+                    listEmployeeResponse.add(employeeService.addEmployeeResponseByPersonID(person.getPersonID()));
+                }
+                return new ResponseEntity<>(listEmployeeResponse, HttpStatus.OK);
+            }
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (InvalidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (BadRequestException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/filter/{condition}")
+    public ResponseEntity<Object> filterEmployee (@PathVariable String condition) {
+        try {
+            switch (condition) {
+                case "1":
+                    return new ResponseEntity<>("11111", HttpStatus.OK);
+                default:
+                    return new ResponseEntity<>("Default", HttpStatus.OK);
+            }
         } catch (ServiceRuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
