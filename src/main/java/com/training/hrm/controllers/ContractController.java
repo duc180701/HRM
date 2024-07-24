@@ -76,7 +76,12 @@ public class ContractController {
             }
 
             // Backup
-            backupService.createBackupContract(exitsContract, Long.parseLong(contractID));
+            if (!exitsContract.getContractType().equals(contractRequest.getContractType())
+                    || !exitsContract.getSalary().equals(contractRequest.getSalary())
+                    || !exitsContract.getStartDate().isEqual(contractRequest.getStartDate())
+                    || !exitsContract.getEndDate().isEqual(contractRequest.getEndDate())) {
+                backupService.createBackupContract(exitsContract, Long.parseLong(contractID));
+            }
 
             Contract updateContract = contractService.updateContract(exitsContract, contractRequest);
             return new ResponseEntity<>(updateContract, HttpStatus.OK);
