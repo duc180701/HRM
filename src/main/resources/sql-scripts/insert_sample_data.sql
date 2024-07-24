@@ -15,12 +15,12 @@ INSERT INTO personnels (level, education, graduation_major, graduation_school, g
 ('Entry', 'Bachelor', 'Information Systems', 'Hanoi University', 2015, '0123456793', 'charlie.davis@company.com', 'charliedavis', 'IT', 'System Administrator', 'Alice Johnson', 'DANG_LAM_VIEC');
 
 -- Chèn dữ liệu mẫu vào bảng contracts
-INSERT INTO contracts (contract_type, start_date, end_date) VALUES
-('Full-time', '2023-01-01', '2024-01-01'),
-('Part-time', '2023-02-01', '2023-08-01'),
-('Internship', '2023-03-01', '2023-06-01'),
-('Temporary', '2023-04-01', '2023-09-01'),
-('Contractor', '2023-05-01', '2023-12-01');
+INSERT INTO contracts (contract_type, salary, start_date, end_date) VALUES
+('Full-time', 1000000, '2023-01-01', '2024-01-01'),
+('Part-time', 2000000, '2023-02-01', '2023-08-01'),
+('Internship', 3000000, '2023-03-01', '2023-06-01'),
+('Temporary', 4000000, '2023-04-01', '2023-09-01'),
+('Contractor', 5000000, '2023-05-01', '2023-12-01');
 
 -- Chèn dữ liệu mẫu vào bảng employees
 INSERT INTO employees (personnel_id, person_id, contract_id) VALUES
@@ -28,4 +28,4 @@ INSERT INTO employees (personnel_id, person_id, contract_id) VALUES
 (2, 2, 2),
 (3, 3, 3),
 (4, 4, 4),
-(5, 5, 5);
+(5, 5, 0);

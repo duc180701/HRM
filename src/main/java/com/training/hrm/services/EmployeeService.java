@@ -10,9 +10,11 @@ import com.training.hrm.models.Personnel;
 import com.training.hrm.repositories.EmployeeRepository;
 import com.training.hrm.repositories.PersonRepository;
 import com.training.hrm.repositories.PersonnelRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -55,7 +57,6 @@ public class EmployeeService {
             exitsEmployee.setPersonID(employeeRequest.getPersonID());
             exitsEmployee.setPersonnelID(employeeRequest.getPersonnelID());
             exitsEmployee.setContractID(employeeRequest.getContractID());
-
             return employeeRepository.save(exitsEmployee);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while updating the employee: " + e.getMessage());
@@ -147,11 +148,8 @@ public class EmployeeService {
         try {
             Personnel personnel;
             if (personnelRepository.findPersonnelByInternalPhoneNumber(str) == null) {
-                System.out.println("DA GAN CHO EMAIL");
-
                 personnel = personnelRepository.findPersonnelByInternalEmail(str);
             } else {
-                System.out.println("DA GAN CHO SDT");
                 personnel = personnelRepository.findPersonnelByInternalPhoneNumber(str);
             }
 
@@ -168,6 +166,101 @@ public class EmployeeService {
             return employeeResponse;
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while searching a employee: " + e.getMessage());
+        }
+    }
+
+    public List<EmployeeResponse> getAllEmployeeResponse() throws InvalidException, ServiceRuntimeException {
+        try {
+            List<Employee> listEmployee = employeeRepository.findAll();
+
+            if (listEmployee.isEmpty()) {
+                throw new InvalidException("No employees exist");
+            }
+
+            List<EmployeeResponse> listEmployeeResponse = new ArrayList<>();
+
+            for (Employee employee : listEmployee) {
+                EmployeeResponse employeeResponse = new EmployeeResponse();
+                Person person = personRepository.findPersonByPersonID(employee.getPersonID());
+                Personnel personnel = personnelRepository.findPersonnelByPersonnelID(employee.getPersonnelID());
+
+                employeeResponse.setEmployeeID(employee.getEmployeeID());
+                employeeResponse.setFullName(person.getFullName());
+                employeeResponse.setPosition(personnel.getPosition());
+                employeeResponse.setDepartment(personnel.getDepartment());
+                employeeResponse.setStatus(personnel.getStatus());
+
+                listEmployeeResponse.add(employeeResponse);
+            }
+
+            return listEmployeeResponse;
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while getting all employee: " + e.getMessage());
+        }
+    }
+
+    public List<EmployeeResponse> filterEmployeeByStatus(String condition) throws ServiceRuntimeException, InvalidException {
+        try {
+            List<Personnel> listPersonnel = personnelRepository.findPersonnelByStatus(condition);
+
+            if (listPersonnel.isEmpty()) {
+                throw new InvalidException("No employees exist");
+            }
+
+            List<EmployeeResponse> listEmployeeResponse = new ArrayList<>();
+            for (Personnel personnel : listPersonnel) {
+                Employee employee = employeeRepository.findEmployeeByPersonnelID(personnel.getPersonnelID());
+                EmployeeResponse employeeResponse = new EmployeeResponse();
+                Person person = personRepository.findPersonByPersonID(employee.getPersonID());
+
+                employeeResponse.setEmployeeID(employee.getEmployeeID());
+                employeeResponse.setFullName(person.getFullName());
+                employeeResponse.setPosition(personnel.getPosition());
+                employeeResponse.setDepartment(personnel.getDepartment());
+                employeeResponse.setStatus(personnel.getStatus());
+
+                listEmployeeResponse.add(employeeResponse);
+            }
+
+            return listEmployeeResponse;
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while getting all employee: " + e.getMessage());
+        }
+    }
+
+    public List<EmployeeResponse> filterEmployeeByNoContract() throws InvalidException, ServiceRuntimeException {
+        try {
+            Long id = (long) 0;
+            List<Employee> listEmployee = employeeRepository.findEmployeesByContractID(id);
+
+            if (listEmployee.isEmpty()) {
+                throw new InvalidException("No employees exist");
+            }
+
+            List<EmployeeResponse> listEmployeeResponse = new ArrayList<>();
+            for (Employee employee : listEmployee) {
+                Personnel personnel = personnelRepository.findPersonnelByPersonnelID(employee.getPersonnelID());
+                Person person = personRepository.findPersonByPersonID(employee.getPersonID());
+                EmployeeResponse employeeResponse = new EmployeeResponse();
+
+                employeeResponse.setFullName(person.getFullName());
+                employeeResponse.setEmployeeID(employee.getEmployeeID());
+                employeeResponse.setPosition(personnel.getPosition());
+                employeeResponse.setDepartment(personnel.getDepartment());
+                employeeResponse.setStatus(personnel.getStatus());
+
+                listEmployeeResponse.add(employeeResponse);
+            }
+
+            return listEmployeeResponse;
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while getting all employee: " + e.getMessage());
         }
     }
 }

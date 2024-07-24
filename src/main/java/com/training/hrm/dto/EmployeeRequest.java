@@ -9,7 +9,7 @@ public class EmployeeRequest {
     @NotNull(message = "Please enter a valid person id")
     private Long personID;
 
-    @NotNull(message = "Please enter a valid contract id")
+//    @NotNull(message = "Please enter a valid contract id")
     private Long contractID;
 
     public EmployeeRequest() {
@@ -37,11 +37,11 @@ public class EmployeeRequest {
         this.personID = personID;
     }
 
-    public @NotNull(message = "Please enter a valid contract id") Long getContractID() {
+    public Long getContractID() {
         return contractID;
     }
 
-    public void setContractID(@NotNull(message = "Please enter a valid contract id") Long contractID) {
+    public void setContractID(Long contractID) {
         this.contractID = contractID;
     }
 }

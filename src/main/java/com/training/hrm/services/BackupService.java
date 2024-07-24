@@ -39,6 +39,7 @@ public class BackupService {
             BackupContract backupContract = new BackupContract();
             backupContract.setContractID(contractID);
             backupContract.setContractType(contract.getContractType());
+            backupContract.setSalary(contract.getSalary());
             backupContract.setStartDate(contract.getStartDate());
             backupContract.setEndDate(contract.getEndDate());
             backupContract.setReason("UPDATE CONTRACT");

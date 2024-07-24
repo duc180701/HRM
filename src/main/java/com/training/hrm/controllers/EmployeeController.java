@@ -202,17 +202,34 @@ public class EmployeeController {
     @GetMapping("/filter/{condition}")
     public ResponseEntity<Object> filterEmployee (@PathVariable String condition) {
         try {
+            List<EmployeeResponse> listEmployeeResponse;
             switch (condition) {
                 case "getAllEmployee":
-                case "retired":
-                case "training":
-                case "working":
-                case "rest":
-                case "maternityRest":
+                    listEmployeeResponse = employeeService.getAllEmployeeResponse();
+                    return new ResponseEntity<>(listEmployeeResponse, HttpStatus.OK);
+                case "DA_NGHi_VIEC":
+                    listEmployeeResponse = employeeService.filterEmployeeByStatus(condition);
+                    return new ResponseEntity<>(listEmployeeResponse, HttpStatus.OK);
+                case "THU_VIEC":
+                    listEmployeeResponse = employeeService.filterEmployeeByStatus(condition);
+                    return new ResponseEntity<>(listEmployeeResponse, HttpStatus.OK);
+                case "DANG_LAM_VIEC":
+                    listEmployeeResponse = employeeService.filterEmployeeByStatus(condition);
+                    return new ResponseEntity<>(listEmployeeResponse, HttpStatus.OK);
+                case "NGHI_CHE_DO":
+                    listEmployeeResponse = employeeService.filterEmployeeByStatus(condition);
+                    return new ResponseEntity<>(listEmployeeResponse, HttpStatus.OK);
+                case "NGHI_THAI_SAN":
+                    listEmployeeResponse = employeeService.filterEmployeeByStatus(condition);
+                    return new ResponseEntity<>(listEmployeeResponse, HttpStatus.OK);
                 case "noContract":
+                    listEmployeeResponse = employeeService.filterEmployeeByNoContract();
+                    return new ResponseEntity<>(listEmployeeResponse, HttpStatus.OK);
                 default:
-                    return new ResponseEntity<>("Default", HttpStatus.OK);
+                    return new ResponseEntity<>("Filtering employees fails", HttpStatus.BAD_REQUEST);
             }
+        } catch (InvalidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (ServiceRuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {

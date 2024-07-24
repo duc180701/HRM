@@ -39,6 +39,7 @@ public class ContractService {
     public Contract updateContract(Contract exitsContract, ContractRequest contractRequest) throws ServiceRuntimeException {
         try {
             exitsContract.setContractType(contractRequest.getContractType());
+            exitsContract.setSalary(contractRequest.getSalary());
             exitsContract.setStartDate(contractRequest.getStartDate());
             exitsContract.setEndDate(contractRequest.getEndDate());
 
