@@ -8,10 +8,8 @@ import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.Employee;
 import com.training.hrm.models.Person;
 import com.training.hrm.models.Personnel;
-import com.training.hrm.repositories.ContractRepository;
-import com.training.hrm.repositories.EmployeeRepository;
-import com.training.hrm.repositories.PersonRepository;
-import com.training.hrm.repositories.PersonnelRepository;
+import com.training.hrm.repositories.*;
+import com.training.hrm.services.BackupService;
 import com.training.hrm.services.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +42,12 @@ public class EmployeeController {
 
     @Autowired
     private ContractRepository contractRepository;
+
+    @Autowired
+    private BackupEmployeeContractRepository backupEmployeeContractRepository;
+
+    @Autowired
+    private BackupService backupService;
 
     @PostMapping("/create")
     public ResponseEntity<Object> createEmployee(@Valid @RequestBody EmployeeRequest employeeRequest, BindingResult result) {
@@ -119,12 +123,18 @@ public class EmployeeController {
             if (contractRepository.findContractByContractID(employeeRequest.getContractID()) == null) {
                 throw new InvalidException("Contract not found");
             }
-            if (employeeRepository.findEmployeeByPersonID(employeeRequest.getPersonID()) != null) {
+            if (employeeRepository.findEmployeeByPersonID(employeeRequest.getPersonID()) != null && !exitsEmployee.getPersonID().equals(employeeRequest.getPersonID())) {
                 throw new BadRequestException("Person is already linked");
             }
-            if (employeeRepository.findEmployeeByPersonnelID(employeeRequest.getPersonnelID()) != null) {
+            if (employeeRepository.findEmployeeByPersonnelID(employeeRequest.getPersonnelID()) != null && !exitsEmployee.getPersonnelID().equals(employeeRequest.getPersonnelID())) {
                 throw new BadRequestException("Personnel is already linked");
             }
+
+            // Backup
+            if (!exitsEmployee.getContractID().equals(employeeRequest.getContractID())) {
+                backupService.createBackupEmployeeContract(exitsEmployee);
+            }
+
             Employee updateEmployee = employeeService.updateEmployee(exitsEmployee, employeeRequest);
             return new ResponseEntity<>(updateEmployee, HttpStatus.OK);
         } catch (NumberFormatException e) {

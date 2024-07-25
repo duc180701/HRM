@@ -29,6 +29,9 @@ public class BackupService {
     @Autowired
     private BackupPersonnelDepartmentRepository backupPersonnelDepartmentRepository;
 
+    @Autowired
+    private BackupEmployeeContractRepository backupEmployeeContractRepository;
+
     public BackupContract createBackupContract(Contract exitsContract, Long contractID) throws ServiceRuntimeException {
         try {
             BackupContract backupContract = new BackupContract();
@@ -79,11 +82,26 @@ public class BackupService {
             backupPersonnelDepartment.setDepartment(findPersonnel.getDepartment());
             backupPersonnelDepartment.setDate(LocalDate.now());
             backupPersonnelDepartment.setStatus(findPersonnel.getStatus());
-            backupPersonnelDepartment.setReason("UPDATE POSITION");
+            backupPersonnelDepartment.setReason("UPDATE DEPARTMENT");
 
             return backupPersonnelDepartmentRepository.save(backupPersonnelDepartment);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while back up this personnel position: " + e.getMessage());
+        }
+    }
+
+    public BackupEmployeeContract createBackupEmployeeContract (Employee employee) throws ServiceRuntimeException {
+        try {
+            BackupEmployeeContract backupEmployeeContract = new BackupEmployeeContract();
+
+            backupEmployeeContract.setContractID(employee.getContractID());
+            backupEmployeeContract.setEmployeeID(employee.getEmployeeID());
+            backupEmployeeContract.setDate(LocalDate.now());
+            backupEmployeeContract.setReason("UPDATE CONTRACT");
+
+            return backupEmployeeContractRepository.save(backupEmployeeContract);
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while back up this employee contract: " + e.getMessage());
         }
     }
 }

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public class BackupPersonnelDepartment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long backup_personnel_department_ID;
+    private Long backupPersonnelDepartmentID;
 
     @Column(name = "employee_id")
     private Long employeeID;
@@ -39,8 +39,8 @@ public class BackupPersonnelDepartment {
     public BackupPersonnelDepartment() {
     }
 
-    public BackupPersonnelDepartment(Long backup_personnel_department_ID, Long employeeID, String fullName, String position, String department, String status, String reason, LocalDate date) {
-        this.backup_personnel_department_ID = backup_personnel_department_ID;
+    public BackupPersonnelDepartment(Long backupPersonnelDepartmentID, Long employeeID, String fullName, String position, String department, String status, String reason, LocalDate date) {
+        this.backupPersonnelDepartmentID = backupPersonnelDepartmentID;
         this.employeeID = employeeID;
         this.fullName = fullName;
         this.position = position;
@@ -50,12 +50,12 @@ public class BackupPersonnelDepartment {
         this.date = date;
     }
 
-    public Long getBackup_personnel_department_ID() {
-        return backup_personnel_department_ID;
+    public Long getBackupPersonnelDepartmentID() {
+        return backupPersonnelDepartmentID;
     }
 
-    public void setBackup_personnel_department_ID(Long backup_personnel_department_ID) {
-        this.backup_personnel_department_ID = backup_personnel_department_ID;
+    public void setBackupPersonnelDepartmentID(Long backupPersonnelDepartmentID) {
+        this.backupPersonnelDepartmentID = backupPersonnelDepartmentID;
     }
 
     public Long getEmployeeID() {

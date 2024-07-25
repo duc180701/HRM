@@ -12,7 +12,7 @@ public class BackupPersonnelPosition {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long backup_personnel_position_ID;
+    private Long backupPersonnelPositionID;
 
     @Column(name = "employee_id")
     private Long employeeID;
@@ -40,8 +40,8 @@ public class BackupPersonnelPosition {
     public BackupPersonnelPosition() {
     }
 
-    public BackupPersonnelPosition(Long backup_personnel_position_ID, Long employeeID, String fullName, String position, String department, String status, String reason, LocalDate date) {
-        this.backup_personnel_position_ID = backup_personnel_position_ID;
+    public BackupPersonnelPosition(Long backupPersonnelPositionID, Long employeeID, String fullName, String position, String department, String status, String reason, LocalDate date) {
+        this.backupPersonnelPositionID = backupPersonnelPositionID;
         this.employeeID = employeeID;
         this.fullName = fullName;
         this.position = position;
@@ -51,12 +51,12 @@ public class BackupPersonnelPosition {
         this.date = date;
     }
 
-    public Long getBackup_personnel_position_ID() {
-        return backup_personnel_position_ID;
+    public Long getBackupPersonnelPositionID() {
+        return backupPersonnelPositionID;
     }
 
-    public void setBackup_personnel_position_ID(Long backup_personnel_position_ID) {
-        this.backup_personnel_position_ID = backup_personnel_position_ID;
+    public void setBackupPersonnelPositionID(Long backupPersonnelPositionID) {
+        this.backupPersonnelPositionID = backupPersonnelPositionID;
     }
 
     public Long getEmployeeID() {
