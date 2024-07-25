@@ -31,6 +31,10 @@ public class BackupContract {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate endDate;
 
+    @Column(name = "date")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate date;
+
     @Column(name = "reason")
     @NotBlank(message = "Please enter valid reason")
     private String reason;
@@ -38,13 +42,14 @@ public class BackupContract {
     public BackupContract() {
     }
 
-    public BackupContract(Long backupContractID, Long contractID, String contractType, Long salary, LocalDate startDate, LocalDate endDate, String reason) {
+    public BackupContract(Long backupContractID, Long contractID, String contractType, Long salary, LocalDate startDate, LocalDate endDate, LocalDate date, String reason) {
         this.backupContractID = backupContractID;
         this.contractID = contractID;
         this.contractType = contractType;
         this.salary = salary;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.date = date;
         this.reason = reason;
     }
 
@@ -102,5 +107,13 @@ public class BackupContract {
 
     public void setSalary(Long salary) {
         this.salary = salary;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 }

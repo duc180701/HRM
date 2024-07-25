@@ -2,6 +2,9 @@ package com.training.hrm.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "backup_personnel_department")
@@ -29,10 +32,14 @@ public class BackupPersonnelDepartment {
     @NotBlank(message = "Please enter valid reason")
     private String reason;
 
+    @Column(name = "date")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate date;
+
     public BackupPersonnelDepartment() {
     }
 
-    public BackupPersonnelDepartment(Long backup_personnel_department_ID, Long employeeID, String fullName, String position, String department, String status, String reason) {
+    public BackupPersonnelDepartment(Long backup_personnel_department_ID, Long employeeID, String fullName, String position, String department, String status, String reason, LocalDate date) {
         this.backup_personnel_department_ID = backup_personnel_department_ID;
         this.employeeID = employeeID;
         this.fullName = fullName;
@@ -40,6 +47,7 @@ public class BackupPersonnelDepartment {
         this.department = department;
         this.status = status;
         this.reason = reason;
+        this.date = date;
     }
 
     public Long getBackup_personnel_department_ID() {
@@ -96,5 +104,13 @@ public class BackupPersonnelDepartment {
 
     public void setReason(@NotBlank(message = "Please enter valid reason") String reason) {
         this.reason = reason;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 }

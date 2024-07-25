@@ -6,6 +6,8 @@ import com.training.hrm.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 public class BackupService {
 
@@ -51,6 +53,7 @@ public class BackupService {
             backupContract.setSalary(exitsContract.getSalary());
             backupContract.setStartDate(exitsContract.getStartDate());
             backupContract.setEndDate(exitsContract.getEndDate());
+            backupContract.setDate(LocalDate.now());
             backupContract.setReason("UPDATE CONTRACT");
             return backupContractRepository.save(backupContract);
         } catch (ServiceRuntimeException e) {
@@ -69,6 +72,7 @@ public class BackupService {
             backupPersonnelPosition.setFullName(findPerson.getFullName());
             backupPersonnelPosition.setPosition(findPersonnel.getPosition());
             backupPersonnelPosition.setDepartment(findPersonnel.getDepartment());
+            backupPersonnelPosition.setDate(LocalDate.now());
             backupPersonnelPosition.setStatus(findPersonnel.getStatus());
             backupPersonnelPosition.setReason("UPDATE POSITION");
 
@@ -89,6 +93,7 @@ public class BackupService {
             backupPersonnelDepartment.setFullName(findPerson.getFullName());
             backupPersonnelDepartment.setPosition(findPersonnel.getPosition());
             backupPersonnelDepartment.setDepartment(findPersonnel.getDepartment());
+            backupPersonnelDepartment.setDate(LocalDate.now());
             backupPersonnelDepartment.setStatus(findPersonnel.getStatus());
             backupPersonnelDepartment.setReason("UPDATE POSITION");
 
