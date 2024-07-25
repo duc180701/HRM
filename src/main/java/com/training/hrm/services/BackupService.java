@@ -12,9 +12,6 @@ import java.time.LocalDate;
 public class BackupService {
 
     @Autowired
-    private BackupPersonnelRepository backupPersonnelRepository;
-
-    @Autowired
     private BackupContractRepository backupContractRepository;
 
     @Autowired
@@ -31,19 +28,6 @@ public class BackupService {
 
     @Autowired
     private BackupPersonnelDepartmentRepository backupPersonnelDepartmentRepository;
-
-    public BackupPersonnel createBackupPersonnel(Personnel personnel, Long personnelID) throws ServiceRuntimeException {
-        try {
-            BackupPersonnel backupPersonnel = new BackupPersonnel();
-            backupPersonnel.setPersonnelID(personnelID);
-            backupPersonnel.setPosition(personnel.getPosition());
-            backupPersonnel.setDepartment(personnel.getDepartment());
-            backupPersonnel.setReason("UPDATE PERSONNEL");
-            return backupPersonnelRepository.save(backupPersonnel);
-        } catch (ServiceRuntimeException e) {
-            throw new ServiceRuntimeException("An error occurred while back up this personnel: " + e.getMessage());
-        }
-    }
 
     public BackupContract createBackupContract(Contract exitsContract, Long contractID) throws ServiceRuntimeException {
         try {
