@@ -90,4 +90,25 @@ public class ReportService {
             throw new ServiceRuntimeException("An error occurred while creating this report: " + e.getMessage());
         }
     }
+
+    public List<BackupEmployeeContract> statisticEmployeeContract (LocalDate startDate, LocalDate endDate) throws ServiceRuntimeException, InvalidException {
+        try {
+            List<BackupEmployeeContract> listResult = new ArrayList<>();
+            List<BackupEmployeeContract> listBackupEmployeeContract = backupEmployeeContractRepository.findAll();
+
+            if (!listBackupEmployeeContract.isEmpty()) {
+                for (BackupEmployeeContract backupEmployeeContract : listBackupEmployeeContract) {
+                    if (!backupEmployeeContract.getDate().isBefore(startDate) && !backupEmployeeContract.getDate().isAfter(endDate)) {
+                        listResult.add(backupEmployeeContract);
+                    }
+                }
+            }
+
+            return listResult;
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while creating this report: " + e.getMessage());
+        }
+    }
 }
