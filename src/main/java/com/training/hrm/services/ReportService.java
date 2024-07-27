@@ -108,7 +108,49 @@ public class ReportService {
         } catch (InvalidException e) {
             throw e;
         } catch (ServiceRuntimeException e) {
-            throw new ServiceRuntimeException("An error occurred while creating this report: " + e.getMessage());
+            throw new ServiceRuntimeException("An error occurred while creating this statistic: " + e.getMessage());
+        }
+    }
+
+    public List<BackupPersonnelPosition> statisticPersonnelPosition (LocalDate startDate, LocalDate endDate) throws ServiceRuntimeException, InvalidException {
+        try {
+            List<BackupPersonnelPosition> listResult = new ArrayList<>();
+            List<BackupPersonnelPosition> listBackupPersonnelPosition = backupPersonnelPositionRepository.findAll();
+
+            if (!listBackupPersonnelPosition.isEmpty()) {
+                for (BackupPersonnelPosition backupPersonnelPosition : listBackupPersonnelPosition) {
+                    if (!backupPersonnelPosition.getDate().isBefore(startDate) && !backupPersonnelPosition.getDate().isAfter(endDate)) {
+                        listResult.add(backupPersonnelPosition);
+                    }
+                }
+            }
+
+            return listResult;
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while creating this statistic: " + e.getMessage());
+        }
+    }
+
+    public List<BackupPersonnelDepartment> statisticPersonnelDepartment (LocalDate startDate, LocalDate endDate) throws ServiceRuntimeException, InvalidException {
+        try {
+            List<BackupPersonnelDepartment> listResult = new ArrayList<>();
+            List<BackupPersonnelDepartment> listBackupPersonnelDepartment = backupPersonnelDepartmentRepository.findAll();
+
+            if (!listBackupPersonnelDepartment.isEmpty()) {
+                for (BackupPersonnelDepartment backupPersonnelDepartment : listBackupPersonnelDepartment) {
+                    if (!backupPersonnelDepartment.getDate().isBefore(startDate) && !backupPersonnelDepartment.getDate().isAfter(endDate)) {
+                        listResult.add(backupPersonnelDepartment);
+                    }
+                }
+            }
+
+            return listResult;
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while creating this statistic: " + e.getMessage());
         }
     }
 }

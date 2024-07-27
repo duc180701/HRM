@@ -3,6 +3,8 @@ package com.training.hrm.controllers;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.BackupEmployeeContract;
+import com.training.hrm.models.BackupPersonnelDepartment;
+import com.training.hrm.models.BackupPersonnelPosition;
 import com.training.hrm.services.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -58,7 +59,7 @@ public class ReportController {
             }
 
             if (listStatistic.isEmpty()) {
-                throw new InvalidException("This employee has no changes during this period");
+                throw new InvalidException("No employees changed contracts during this period");
             }
 
             return new ResponseEntity<>(listStatistic, HttpStatus.OK);
@@ -71,4 +72,49 @@ public class ReportController {
         }
     }
 
+    @GetMapping("/statistic-personnel-position-change")
+    public ResponseEntity<Object> statisticPersonnelPositionChange(@RequestParam(name = "start_date") LocalDate startDate, @RequestParam(name = "end_date") LocalDate endDate) {
+        try {
+            List<BackupPersonnelPosition> listStatistic = reportService.statisticPersonnelPosition(startDate, endDate);
+
+            if (!startDate.isBefore(endDate)) {
+                throw new InvalidException("Start date must be before end date");
+            }
+
+            if (listStatistic.isEmpty()) {
+                throw new InvalidException("No employees changed position during this period");
+            }
+
+            return new ResponseEntity<>(listStatistic, HttpStatus.OK);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (InvalidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/statistic-personnel-department-change")
+    public ResponseEntity<Object> statisticPersonnelDepartmentChange(@RequestParam(name = "start_date") LocalDate startDate, @RequestParam(name = "end_date") LocalDate endDate) {
+        try {
+            List<BackupPersonnelDepartment> listStatistic = reportService.statisticPersonnelDepartment(startDate, endDate);
+
+            if (!startDate.isBefore(endDate)) {
+                throw new InvalidException("Start date must be before end date");
+            }
+
+            if (listStatistic.isEmpty()) {
+                throw new InvalidException("No employees changed department during this period");
+            }
+
+            return new ResponseEntity<>(listStatistic, HttpStatus.OK);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (InvalidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
