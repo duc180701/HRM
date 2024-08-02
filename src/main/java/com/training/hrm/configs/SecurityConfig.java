@@ -42,7 +42,8 @@ public class SecurityConfig {
                                 "/employee/**",
                                 "/user/**",
                                 "/backup/**",
-                                "/report/**").permitAll()
+                                "/report/**",
+                                "/attendance/**").permitAll()
 //                        .requestMatchers().hasRole("ADMIN")
 //                        .requestMatchers().hasRole("BAN_GIAM_DOC")
 //                        .requestMatchers().hasRole("TRUONG_PHONG")
