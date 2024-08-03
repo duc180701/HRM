@@ -51,6 +51,7 @@ public class SecurityConfig {
 //                        .requestMatchers().hasRole("NHAN_VIEN")
                         .anyRequest().authenticated())
                 .sessionManagement(sessionManagement ->
+                        // Ứng dụng không duy trì session của người dùng
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin((formLogin) -> formLogin
