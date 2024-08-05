@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+        // Tắt xác định loại nội dung trả về dựa trên phần mở rộng của URL
         configurer.favorPathExtension(false);
     }
 }
