@@ -2,25 +2,25 @@ package com.training.hrm.controllers;
 
 import com.training.hrm.components.JwtUtil;
 import com.training.hrm.customservices.CustomUserDetailsService;
+import com.training.hrm.dto.ForgotPasswordRequest;
 import com.training.hrm.dto.LoginRequest;
-import com.training.hrm.dto.LoginResponse;
+import com.training.hrm.dto.UserRequest;
 import com.training.hrm.exceptions.BadRequestException;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
+import com.training.hrm.models.ForgotPassword;
 import com.training.hrm.models.User;
 import com.training.hrm.repositories.EmployeeRepository;
 import com.training.hrm.repositories.UserRepository;
 import com.training.hrm.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
@@ -54,23 +54,27 @@ public class UserController {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Operation(summary = "Create a user account")
     @PostMapping("/create")
-    public ResponseEntity<Object> createUser(@Valid @RequestBody User user, BindingResult result) {
+    public ResponseEntity<Object> createUser(@Valid @RequestBody UserRequest userRequest, BindingResult result) {
         try {
             if (result.hasErrors()) {
                 throw new BadRequestException(result.getAllErrors().get(0).getDefaultMessage());
             }
-            if (employeeRepository.findEmployeeByEmployeeID(user.getEmployeeID()) == null) {
+            if (employeeRepository.findEmployeeByEmployeeID(userRequest.getEmployeeID()) == null) {
                 throw new InvalidException("Employee not found");
             }
-            if (userRepository.findUserByEmployeeID(user.getEmployeeID()) != null) {
+            if (userRepository.findUserByEmployeeID(userRequest.getEmployeeID()) != null) {
                 throw new BadRequestException("This employee already has an account");
             }
-            if (userRepository.findUserByUsername(user.getUsername()) != null) {
+            if (userRepository.findUserByUsername(userRequest.getUsername()) != null) {
                 throw new BadRequestException("User already exits");
             }
-            userService.registerUser(user);
-            User createUser = userService.createUser(user);
+
+            // Mã hóa mật khẩu tài khoản
+            userService.registerUser(userRequest);
+
+            User createUser = userService.createUser(userRequest);
 
             return new ResponseEntity<>(createUser, HttpStatus.OK);
         } catch (BadRequestException e) {
@@ -82,6 +86,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "Read all user information")
     @GetMapping("/read/{userID}")
     public ResponseEntity<Object> readContract(@PathVariable String userID) {
         try {
@@ -101,38 +106,40 @@ public class UserController {
         }
     }
 
-    @PostMapping("/update/{userID}")
-    public ResponseEntity<Object> updateUser(@PathVariable String userID, @Valid @RequestBody User user, BindingResult result) {
-        try {
-            if (result.hasErrors()) {
-                throw new BadRequestException(result.getAllErrors().get(0).getDefaultMessage());
-            }
-            User exitsUser = userRepository.findUserByUserID(Long.parseLong(userID));
-            if (exitsUser == null) {
-                throw new InvalidException("User not found");
-            }
-            if (employeeRepository.findEmployeeByEmployeeID(user.getEmployeeID()) == null) {
-                throw new InvalidException("Employee not found");
-            }
-            if (userRepository.findUserByEmployeeID(user.getEmployeeID()) != null) {
-                throw new BadRequestException("This employee already has an account");
-            }
-            if (userRepository.findUserByUsername(user.getUsername()) != null) {
-                throw new BadRequestException("User already exits");
-            }
-            User updateUser = userService.updateUser(exitsUser, user);
-            return new ResponseEntity<>(updateUser, HttpStatus.OK);
-        } catch (NumberFormatException e) {
-            return new ResponseEntity<>("Invalid user ID format", HttpStatus.BAD_REQUEST);
-        } catch (InvalidException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (ServiceRuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @Operation(summary = "Update user by ID")
+//    @PostMapping("/update/{userID}")
+//    public ResponseEntity<Object> updateUser(@PathVariable String userID, @Valid @RequestBody User user, BindingResult result) {
+//        try {
+//            if (result.hasErrors()) {
+//                throw new BadRequestException(result.getAllErrors().get(0).getDefaultMessage());
+//            }
+//            User exitsUser = userRepository.findUserByUserID(Long.parseLong(userID));
+//            if (exitsUser == null) {
+//                throw new InvalidException("User not found");
+//            }
+//            if (employeeRepository.findEmployeeByEmployeeID(user.getEmployeeID()) == null) {
+//                throw new InvalidException("Employee not found");
+//            }
+//            if (userRepository.findUserByEmployeeID(user.getEmployeeID()) != null) {
+//                throw new BadRequestException("This employee already has an account");
+//            }
+//            if (userRepository.findUserByUsername(user.getUsername()) != null) {
+//                throw new BadRequestException("User already exits");
+//            }
+//            User updateUser = userService.updateUser(exitsUser, user);
+//            return new ResponseEntity<>(updateUser, HttpStatus.OK);
+//        } catch (NumberFormatException e) {
+//            return new ResponseEntity<>("Invalid user ID format", HttpStatus.BAD_REQUEST);
+//        } catch (InvalidException e) {
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+//        } catch (ServiceRuntimeException e) {
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
+    @Operation(summary = "Delete a user by ID")
     @PostMapping("/delete/{userID}")
     public ResponseEntity<Object> deleteUser(@PathVariable String userID) {
         try {
@@ -167,6 +174,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "Login with the created account and password")
     @PostMapping("/login")
     public ResponseEntity<Object> loginUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult result) {
         try {
@@ -200,4 +208,25 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "Retrieve password if forget")
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Object> forgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                throw new InvalidException(result.getAllErrors().get(0).getDefaultMessage());
+            }
+
+            ForgotPassword forgotPassword = userService.forgotPassword(forgotPasswordRequest);
+
+            return new ResponseEntity<>(forgotPassword, HttpStatus.OK);
+        } catch (InvalidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

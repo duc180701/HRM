@@ -10,7 +10,6 @@ import java.util.List;
 public interface PersonnelRepository extends JpaRepository<Personnel, Long> {
     Personnel findPersonnelByInternalPhoneNumber(String phoneNumber);
     Personnel findPersonnelByInternalEmail(String email);
-    Personnel findPersonnelByEmployeeAccount(String employeeAccount);
     Personnel findPersonnelByPersonnelID(Long id);
     List<Personnel> findPersonnelByStatus(String status);
 }

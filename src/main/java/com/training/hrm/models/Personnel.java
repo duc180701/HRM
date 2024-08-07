@@ -31,9 +31,6 @@ public class Personnel {
     @Column(name = "internal_email")
     private String internalEmail;
 
-    @Column(name = "employee_account")
-    private String employeeAccount;
-
     @Column(name = "department")
     private String department;
 
@@ -49,7 +46,7 @@ public class Personnel {
     public Personnel() {
     }
 
-    public Personnel(Long personnelID, String level, String education, String graduationMajor, String graduationSchool, int graduationYear, String internalPhoneNumber, String internalEmail, String employeeAccount, String department, String position, String directManagementStaff, String status) {
+    public Personnel(Long personnelID, String level, String education, String graduationMajor, String graduationSchool, int graduationYear, String internalPhoneNumber, String internalEmail, String department, String position, String directManagementStaff, String status) {
         this.personnelID = personnelID;
         this.level = level;
         this.education = education;
@@ -58,7 +55,6 @@ public class Personnel {
         this.graduationYear = graduationYear;
         this.internalPhoneNumber = internalPhoneNumber;
         this.internalEmail = internalEmail;
-        this.employeeAccount = employeeAccount;
         this.department = department;
         this.position = position;
         this.directManagementStaff = directManagementStaff;
@@ -127,14 +123,6 @@ public class Personnel {
 
     public void setInternalEmail(String internalEmail) {
         this.internalEmail = internalEmail;
-    }
-
-    public String getEmployeeAccount() {
-        return employeeAccount;
-    }
-
-    public void setEmployeeAccount(String employeeAccount) {
-        this.employeeAccount = employeeAccount;
     }
 
     public String getDepartment() {

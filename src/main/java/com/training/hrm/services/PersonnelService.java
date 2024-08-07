@@ -25,7 +25,6 @@ public class PersonnelService {
             personnel.setGraduationYear(personnelRequest.getGraduationYear());
             personnel.setInternalPhoneNumber(personnelRequest.getInternalPhoneNumber());
             personnel.setInternalEmail(personnelRequest.getInternalEmail());
-            personnel.setEmployeeAccount(personnelRequest.getEmployeeAccount());
             personnel.setDepartment(personnelRequest.getDepartment());
             personnel.setPosition(personnelRequest.getPosition());
             personnel.setDirectManagementStaff(personnelRequest.getDirectManagementStaff());
@@ -60,7 +59,6 @@ public class PersonnelService {
             exitsPersonnel.setGraduationYear(personnelRequest.getGraduationYear());
             exitsPersonnel.setInternalPhoneNumber(personnelRequest.getInternalPhoneNumber());
             exitsPersonnel.setInternalEmail(personnelRequest.getInternalEmail());
-            exitsPersonnel.setEmployeeAccount(personnelRequest.getEmployeeAccount());
             exitsPersonnel.setDepartment(personnelRequest.getDepartment());
             exitsPersonnel.setPosition(personnelRequest.getPosition());
             exitsPersonnel.setDirectManagementStaff(personnelRequest.getDirectManagementStaff());

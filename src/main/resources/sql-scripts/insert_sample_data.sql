@@ -7,12 +7,12 @@ INSERT INTO persons (full_name, gender, birth_of_date, citizen_identity_id, citi
 ('Charlie Davis', 'Male', '1995-05-05', '012345678905', '2014-05-05', 'Hanoi', '2029-05-05', '01234571', '2014-05-05', 'Hanoi', '2029-05-05', '202 Birch St', '202 Birch St', '0123456793', 'charliedavis@example.com');
 
 -- Chèn dữ liệu mẫu vào bảng personnels
-INSERT INTO personnels (level, education, graduation_major, graduation_school, graduation_year, internal_phone_number, internal_email, employee_account, department, position, direct_management_staff, status) VALUES
-('Senior', 'Bachelor', 'Computer Science', 'Hanoi University', 2010, '0123456789', 'john.doe@company.com', 'johndoe', 'IT', 'Developer', 'Jane Smith', 'DANG_LAM_VIEC'),
-('Junior', 'Master', 'Information Technology', 'Saigon University', 2012, '0123456790', 'jane.doe@company.com', 'janedoe', 'IT', 'Tester', 'John Doe', 'DANG_LAM_VIEC'),
-('Mid-level', 'Bachelor', 'Software Engineering', 'Danang University', 2011, '0123456791', 'alice.johnson@company.com', 'alicejohnson', 'IT', 'Project Manager', 'Bob Brown', 'NGHI_CHE_DO'),
-('Lead', 'PhD', 'Data Science', 'Hue University', 2008, '0123456792', 'bob.brown@company.com', 'bobbrown', 'Data', 'Data Scientist', 'Charlie Davis', 'NGHI_THAI_SAN'),
-('Entry', 'Bachelor', 'Information Systems', 'Hanoi University', 2015, '0123456793', 'charlie.davis@company.com', 'charliedavis', 'IT', 'System Administrator', 'Alice Johnson', 'DANG_LAM_VIEC');
+INSERT INTO personnels (level, education, graduation_major, graduation_school, graduation_year, internal_phone_number, internal_email, department, position, direct_management_staff, status) VALUES
+('Senior', 'Bachelor', 'Computer Science', 'Hanoi University', 2010, '0123456789', 'john.doe@company.com', 'IT', 'Developer', 'Jane Smith', 'DANG_LAM_VIEC'),
+('Junior', 'Master', 'Information Technology', 'Saigon University', 2012, '0123456790', 'jane.doe@company.com', 'IT', 'Tester', 'John Doe', 'DANG_LAM_VIEC'),
+('Mid-level', 'Bachelor', 'Software Engineering', 'Danang University', 2011, '0123456791', 'alice.johnson@company.com', 'IT', 'Project Manager', 'Bob Brown', 'NGHI_CHE_DO'),
+('Lead', 'PhD', 'Data Science', 'Hue University', 2008, '0123456792', 'bob.brown@company.com', 'Data', 'Data Scientist', 'Charlie Davis', 'NGHI_THAI_SAN'),
+('Entry', 'Bachelor', 'Information Systems', 'Hanoi University', 2015, '0123456793', 'charlie.davis@company.com', 'IT', 'System Administrator', 'Alice Johnson', 'DANG_LAM_VIEC');
 
 -- Chèn dữ liệu mẫu vào bảng contracts
 INSERT INTO contracts (contract_type, salary, start_date, end_date) VALUES
@@ -37,3 +37,12 @@ INSERT INTO attendances (employee_id, date, work_hours, check_in_time, check_out
 (3, '2023-07-2', 9.0, '08:00:00', '17:00:00', 'Overtime'),
 (4, '2023-07-3', 8.0, '09:00:00', '17:00:00', 'Meeting in the morning'),
 (5, '2023-07-4', 6.5, '08:00:00', '14:30:00', 'Left early for appointment');
+
+-- Chèn dữ liệu mẫu vào bảng roles
+INSERT INTO roles (name, description) VALUES
+('ADMIN', ''),
+('BAN_GIAM_DOC', ''),
+('TRUONG_PHONG', ''),
+('PHO_PHONG', ''),
+('NHAN_VIEN', '');
+
