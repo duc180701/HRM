@@ -2,6 +2,7 @@ package com.training.hrm.controllers;
 
 import com.training.hrm.components.JwtUtil;
 import com.training.hrm.customservices.CustomUserDetailsService;
+import com.training.hrm.dto.ChangePasswordRequest;
 import com.training.hrm.dto.ForgotPasswordRequest;
 import com.training.hrm.dto.LoginRequest;
 import com.training.hrm.dto.UserRequest;
@@ -227,6 +228,26 @@ public class UserController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "Change user password")
+    @PostMapping("/change-password")
+    public ResponseEntity<Object> changePasswordUser(@RequestParam String userID, @Valid @RequestBody ChangePasswordRequest changePasswordRequest, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                throw new InvalidException(result.getAllErrors().get(0).getDefaultMessage());
+            }
+            Long id = Long.parseLong(userID);
+            userService.changePassword(id, changePasswordRequest);
+
+            return new ResponseEntity<>("Change password successful", HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>("Please enter a valid user ID", HttpStatus.BAD_REQUEST);
+        } catch (InvalidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

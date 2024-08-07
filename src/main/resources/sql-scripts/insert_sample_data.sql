@@ -40,9 +40,10 @@ INSERT INTO attendances (employee_id, date, work_hours, check_in_time, check_out
 
 -- Chèn dữ liệu mẫu vào bảng roles
 INSERT INTO roles (name, description) VALUES
+('HE_THONG', ''),
 ('ADMIN', ''),
 ('BAN_GIAM_DOC', ''),
 ('TRUONG_PHONG', ''),
+('PHO_PHONG_NHAN_SU', ''),
 ('PHO_PHONG', ''),
 ('NHAN_VIEN', '');
-

@@ -1,5 +1,6 @@
 package com.training.hrm.services;
 
+import com.training.hrm.dto.ChangePasswordRequest;
 import com.training.hrm.dto.ForgotPasswordRequest;
 import com.training.hrm.dto.UserRequest;
 import com.training.hrm.exceptions.InvalidException;
@@ -17,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.UUID;
 
@@ -194,6 +196,29 @@ public class UserService {
             throw e;
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while sending forgot password request: " + e.getMessage());
+        }
+    }
+
+    // Thay đổi mật khẩu người dùng
+    public void changePassword (Long id, ChangePasswordRequest changePasswordRequest) throws InvalidException, ServiceRuntimeException {
+        try {
+            User user = userRepository.findUserByUserID(id);
+            if (user == null) {
+                throw new InvalidException("User not found");
+            }
+            if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
+                throw new InvalidException("Old password incorrect");
+            }
+            if (!changePasswordRequest.getPassword().equals(changePasswordRequest.getRetypePassword())) {
+                throw new InvalidException("Retype password not match");
+            }
+
+            user.setPassword(passwordEncoder.encode(changePasswordRequest.getPassword()));
+            userRepository.save(user);
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while changing password: " + e.getMessage());
         }
     }
 }

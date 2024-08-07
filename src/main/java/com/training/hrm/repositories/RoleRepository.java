@@ -14,4 +14,6 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
     @Query("SELECT n.name FROM Role n")
     List<String> findAllRoleNames();
+
+
 }
