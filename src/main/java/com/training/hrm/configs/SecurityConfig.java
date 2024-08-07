@@ -44,6 +44,7 @@ public class SecurityConfig {
                                 "/home",
                                 "/swagger-ui/**",
                                 "/v3/**",
+                                "/user/login",
                                 "/person/**",
                                 "/personnel/**",
                                 "/contract/**",

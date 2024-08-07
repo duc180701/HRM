@@ -15,6 +15,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
             throws IOException {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        response.getWriter().write("Bạn không có đủ quyền để truy cập chức năng này.");
+        response.getWriter().write("This account does not have sufficient permissions to perform this function");
     }
 }
