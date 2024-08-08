@@ -1,5 +1,7 @@
 package com.training.hrm.services;
 
+import com.training.hrm.dto.ContractRequest;
+import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.*;
 import com.training.hrm.repositories.*;
@@ -7,9 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class BackupService {
+
+    @Autowired
+    private ApproveBackupContractRepository approveBackupContractRepository;
 
     @Autowired
     private BackupContractRepository backupContractRepository;
@@ -32,10 +38,10 @@ public class BackupService {
     @Autowired
     private BackupEmployeeContractRepository backupEmployeeContractRepository;
 
-    public BackupContract createBackupContract(Contract exitsContract, Long contractID) throws ServiceRuntimeException {
+    public BackupContract createBackupContract(Contract exitsContract) throws ServiceRuntimeException {
         try {
             BackupContract backupContract = new BackupContract();
-            backupContract.setContractID(contractID);
+            backupContract.setContractID(exitsContract.getContractID());
             backupContract.setContractType(exitsContract.getContractType());
             backupContract.setSalary(exitsContract.getSalary());
             backupContract.setStartDate(exitsContract.getStartDate());
@@ -102,6 +108,54 @@ public class BackupService {
             return backupEmployeeContractRepository.save(backupEmployeeContract);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while back up this employee contract: " + e.getMessage());
+        }
+    }
+
+    public ApproveBackupContract createApproveUpdateContract(Long id, ContractRequest contractRequest) throws ServiceRuntimeException, InvalidException {
+        try {
+            ApproveBackupContract approveBackupContract = new ApproveBackupContract();
+            approveBackupContract.setContractID(id);
+            approveBackupContract.setContractType(contractRequest.getContractType());
+            approveBackupContract.setStartDate(contractRequest.getStartDate());
+            approveBackupContract.setEndDate(contractRequest.getEndDate());
+            approveBackupContract.setSalary(contractRequest.getSalary());
+            approveBackupContract.setReason("WAIT TO APPROVE");
+            approveBackupContract.setDate(LocalDate.now());
+            approveBackupContract.setApprove(false);
+
+            return approveBackupContractRepository.save(approveBackupContract);
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while create approve backup contract: " + e.getMessage());
+        }
+    }
+
+    public List<ApproveBackupContract> getAllApproveBackupContract() throws ServiceRuntimeException, InvalidException {
+        try {
+            List<ApproveBackupContract> listApproveBackupContract = approveBackupContractRepository.findAll();
+            if (listApproveBackupContract.isEmpty()) {
+                throw new InvalidException("List approve backup contract is empty");
+            }
+
+            return listApproveBackupContract;
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while get approve backup contract list: " + e.getMessage());
+        }
+    }
+
+    public ApproveBackupContract approveBackupContract(Long id) throws InvalidException, ServiceRuntimeException {
+        try {
+            ApproveBackupContract approveBackupContract = approveBackupContractRepository.findApproveBackupContractByApproveBackupContractID(id);
+            approveBackupContract.setApprove(true);
+            approveBackupContract.setReason("APPROVED");
+            return approveBackupContractRepository.save(approveBackupContract);
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while approve backup contract: " + e.getMessage());
         }
     }
 }

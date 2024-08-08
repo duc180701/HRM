@@ -2,6 +2,8 @@ package com.training.hrm.services;
 
 import com.training.hrm.dto.ContractRequest;
 import com.training.hrm.exceptions.ServiceRuntimeException;
+import com.training.hrm.models.ApproveBackupContract;
+import com.training.hrm.models.BackupContract;
 import com.training.hrm.models.Contract;
 import com.training.hrm.repositories.ContractRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +38,15 @@ public class ContractService {
         }
     }
 
-    public Contract updateContract(Contract exitsContract, ContractRequest contractRequest) throws ServiceRuntimeException {
+    public Contract updateContract(ApproveBackupContract approveBackupContract) throws ServiceRuntimeException {
         try {
-            exitsContract.setContractType(contractRequest.getContractType());
-            exitsContract.setSalary(contractRequest.getSalary());
-            exitsContract.setStartDate(contractRequest.getStartDate());
-            exitsContract.setEndDate(contractRequest.getEndDate());
+            Contract updateContract = contractRepository.findContractByContractID(approveBackupContract.getContractID());
+            updateContract.setSalary(approveBackupContract.getSalary());
+            updateContract.setContractType(approveBackupContract.getContractType());
+            updateContract.setStartDate(approveBackupContract.getStartDate());
+            updateContract.setEndDate(approveBackupContract.getEndDate());
 
-            return contractRepository.save(exitsContract);
+            return contractRepository.save(updateContract);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while updating the contract: " + e.getMessage());
         }

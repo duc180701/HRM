@@ -2,6 +2,8 @@ package com.training.hrm.configs;
 
 import com.training.hrm.customservices.CustomAccessDeniedHandler;
 import com.training.hrm.customservices.CustomUserDetailsService;
+import com.training.hrm.repositories.RoleRepository;
+import com.training.hrm.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +23,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -35,30 +39,59 @@ public class SecurityConfig {
     @Autowired
     private CustomAccessDeniedHandler accessDeniedHandler;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
+        // Lấy tất cả các quyền có trong hệ thống
+        List<String> roles = roleRepository.findAllRoleNames();
+        String rolesString = String.join("','", roles);
+        String accessExpressionWithQuotes = rolesString.replace("'", "\"");
+        String accessExpression = "\"" + accessExpressionWithQuotes + "\"";
+        System.out.println(accessExpression);
+
         http
                 .csrf((csrf -> csrf.disable()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                "/home",
                                 "/swagger-ui/**",
                                 "/v3/**",
                                 "/user/login",
-                                "/person/**",
-                                "/personnel/**",
-                                "/contract/**",
-                                "/user/**",
+                                "/user/forgot-password/**",
+                                "/user/change-password",
                                 "/backup/**",
                                 "/report/**",
-                                "/attendance/**",
-                                "/role/**",
-                                "/employee/**").permitAll()
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
-//                        .requestMatchers().hasRole("BAN_GIAM_DOC")
-//                        .requestMatchers().hasRole("TRUONG_PHONG")
-//                        .requestMatchers().hasRole("PHO_PHONG")
-//                        .requestMatchers().hasRole("NHAN_VIEN")
+                                "/user/create/**",
+                                "/attendance/**").permitAll()
+                        .requestMatchers("/role/**").hasAuthority("HE_THONG")
+                        .requestMatchers(
+                                "/employee/update/**",
+                                "/employee/delete/**",
+                                "/employee/create/**",
+                                "/person/create/**",
+                                "/person/update/**",
+                                "/person/delete/**",
+                                "/personnel/create/**",
+                                "/personnel/update/**",
+                                "/personnel/delete/**",
+                                "/contract/create/**",
+                                "/contract/update/**",
+                                "/contract/delete/**",
+                                "/employee/filter/**",
+                                "/user/delete/**",
+                                "/user/read/**"
+                                ).hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "NHAN_VIEN_NS", "HE_THONG")
+                        .requestMatchers("/backup/approve-contract/**",
+                                "/backup/read-all-approve-contract/**").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "HE_THONG")
+                        .requestMatchers("/backup/read-backup-contract/**").hasAnyAuthority("ADMIN", "HE_THONG", "BAN_GIAM_DOC", "TRUONG_PHONG_NS", "PHO_PHONG_NS", "NHAN_VIEN_NS")
+                        .requestMatchers(
+                                "/employee/search/**",
+                                "/employee/read/**",
+                                "/person/read/**",
+                                "/personnel/read/**",
+                                "/contract/read/**",
+                                "/user/avatar/**").hasAnyAuthority("HE_THONG","ADMIN","GUEST","NHAN_VIEN","BAN_GIAM_DOC","TRUONG_PHONG_HC","PHO_PHONG_HC","NHAN_VIEN_HC","TRUONG_PHONG_NS","PHO_PHONG_NS","NHAN_VIEN_NS","TRUONG_PHONG_TB","PHO_PHONG_TB","NHAN_VIEN_TB","TRUONG_PHONG_TT","PHO_PHONG_TT","NHAN_VIEN_TT","TO_TRUONG_MEDIA","TO_PHO_MEDIA","NHAN_VIEN_MEDIA","TO_TRUONG_SK","TO_PHO_SK","NHAN_VIEN_SK","TRUONG_PHONG_CSKH","PHO_PHONG_CSKH","NHAN_VIEN_CSKH")
                         .anyRequest().authenticated())
                 .sessionManagement(sessionManagement ->
                         // Ứng dụng không duy trì session của người dùng

@@ -2,22 +2,33 @@ package com.training.hrm.controllers;
 
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
-import com.training.hrm.models.BackupContract;
-import com.training.hrm.models.BackupEmployeeContract;
-import com.training.hrm.models.BackupPersonnelDepartment;
-import com.training.hrm.models.BackupPersonnelPosition;
-import com.training.hrm.repositories.BackupContractRepository;
-import com.training.hrm.repositories.BackupEmployeeContractRepository;
-import com.training.hrm.repositories.BackupPersonnelDepartmentRepository;
-import com.training.hrm.repositories.BackupPersonnelPositionRepository;
+import com.training.hrm.models.*;
+import com.training.hrm.repositories.*;
+import com.training.hrm.services.BackupService;
+import com.training.hrm.services.ContractService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/backup")
 public class BackupController {
+
+    @Autowired
+    private ApproveBackupContractRepository approveBackupContractRepository;
+
+    @Autowired
+    private ContractService contractService;
+
+    @Autowired
+    private ContractRepository contractRepository;
+
+    @Autowired
+    private BackupService backupService;
 
     @Autowired
     private BackupContractRepository backupContractRepository;
@@ -31,6 +42,7 @@ public class BackupController {
     @Autowired
     private BackupEmployeeContractRepository backupEmployeeContractRepository;
 
+    @Operation(summary = "Read a backup contract by ID")
     @GetMapping("/read-backup-contract/{backupContractID}")
     public ResponseEntity<Object> readBackupContractByBackupContractID(@PathVariable String backupContractID) {
         try {
@@ -102,6 +114,44 @@ public class BackupController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (ServiceRuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "Get all contract need update in approve contract list")
+    @GetMapping("/read-all-approve-contract")
+    public ResponseEntity<Object> getAllApproveContract() {
+        try {
+            List<ApproveBackupContract> listApproveBackupContract = backupService.getAllApproveBackupContract();
+
+            return new ResponseEntity<>(listApproveBackupContract, HttpStatus.OK);
+        } catch (InvalidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "Approve update contract by backup contract ID")
+    @PostMapping("/approve-contract/{backupContractID}")
+    public ResponseEntity<Object> approveUpdateContract(@PathVariable String backupContractID) {
+        try {
+            Long id = Long.parseLong(backupContractID);
+            ApproveBackupContract approveBackupContract = backupService.approveBackupContract(id); //Set approve to true
+            Contract oldContract = contractRepository.findContractByContractID(approveBackupContract.getContractID());
+            backupService.createBackupContract(oldContract);
+            Contract updateContract = contractService.updateContract(approveBackupContract);
+
+            return new ResponseEntity<>(updateContract, HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>("Please enter a valid backup contact ID", HttpStatus.BAD_REQUEST);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (InvalidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

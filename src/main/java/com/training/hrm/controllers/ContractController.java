@@ -8,8 +8,10 @@ import com.training.hrm.models.Contract;
 import com.training.hrm.repositories.ContractRepository;
 import com.training.hrm.services.BackupService;
 import com.training.hrm.services.ContractService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -28,6 +30,7 @@ public class ContractController {
     @Autowired
     private BackupService backupService;
 
+    @Operation(summary = "Create a new contract")
     @PostMapping("/create")
     public ResponseEntity<Object> createContract(@Valid @RequestBody ContractRequest contractRequest, BindingResult result) {
         try {
@@ -45,6 +48,7 @@ public class ContractController {
         }
     }
 
+    @Operation(summary = "Read all information of a contract by ID")
     @GetMapping("/read/{contractID}")
     public ResponseEntity<Object> readContract(@PathVariable String contractID) {
         try {
@@ -64,27 +68,28 @@ public class ContractController {
         }
     }
 
+    @Operation(summary = "Update contract by ID")
     @PostMapping("/update/{contractID}")
     public ResponseEntity<Object> updateContract(@PathVariable String contractID, @Valid @RequestBody ContractRequest contractRequest, BindingResult result) {
         try {
             if (result.hasErrors()) {
                 throw new BadRequestException(result.getAllErrors().get(0).getDefaultMessage());
             }
-            Contract exitsContract = contractRepository.findContractByContractID(Long.parseLong(contractID));
+            Long id = Long.parseLong(contractID);
+            Contract exitsContract = contractRepository.findContractByContractID(id);
             if(exitsContract == null) {
                 throw new InvalidException("Contract not found");
             }
 
-            // Backup
+            // Call approve update contract
             if (!exitsContract.getContractType().equals(contractRequest.getContractType())
                     || !exitsContract.getSalary().equals(contractRequest.getSalary())
                     || !exitsContract.getStartDate().isEqual(contractRequest.getStartDate())
                     || !exitsContract.getEndDate().isEqual(contractRequest.getEndDate())) {
-                backupService.createBackupContract(exitsContract, Long.parseLong(contractID));
+                backupService.createApproveUpdateContract(id, contractRequest);
             }
 
-            Contract updateContract = contractService.updateContract(exitsContract, contractRequest);
-            return new ResponseEntity<>(updateContract, HttpStatus.OK);
+            return new ResponseEntity<>("Information added successfully, please wait for approval", HttpStatus.OK);
         } catch (NumberFormatException e) {
             return new ResponseEntity<>("Invalid contract ID format", HttpStatus.BAD_REQUEST);
         } catch (InvalidException e) {

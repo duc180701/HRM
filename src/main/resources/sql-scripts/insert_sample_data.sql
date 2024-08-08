@@ -43,6 +43,7 @@ INSERT INTO roles (name, description) VALUES
 ('HE_THONG', ''),
 ('ADMIN', ''),
 ('GUEST', ''),
+('NHAN_VIEN', ''),
 ('BAN_GIAM_DOC', ''),
 ('TRUONG_PHONG_HC', ''),
 ('PHO_PHONG_HC', ''),
