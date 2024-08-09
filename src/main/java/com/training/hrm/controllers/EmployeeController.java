@@ -70,6 +70,9 @@ public class EmployeeController {
             if (employeeRepository.findEmployeeByPersonnelID(employeeRequest.getPersonnelID()) != null) {
                 throw new BadRequestException("Personnel is already linked");
             }
+            if (employeeRepository.findEmployeeByContractID(employeeRequest.getContractID()) != null) {
+                throw new BadRequestException("Contract is already linked");
+            }
             Employee createEmployee = employeeService.createEmployee(employeeRequest);
             return new ResponseEntity<>(createEmployee, HttpStatus.OK);
         } catch (NumberFormatException e) {
@@ -128,6 +131,9 @@ public class EmployeeController {
             }
             if (employeeRepository.findEmployeeByPersonnelID(employeeRequest.getPersonnelID()) != null && !exitsEmployee.getPersonnelID().equals(employeeRequest.getPersonnelID())) {
                 throw new BadRequestException("Personnel is already linked");
+            }
+            if (employeeRepository.findEmployeeByContractID(employeeRequest.getContractID()) != null && !exitsEmployee.getContractID().equals(employeeRequest.getContractID())) {
+                throw new BadRequestException("Contract is already linked");
             }
 
             // Backup

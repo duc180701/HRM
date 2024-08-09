@@ -80,7 +80,7 @@ public class AttendanceController {
 
 
     @Operation(summary = "The system has not recognized the MultipartFile type")
-    @PostMapping("/create-by-file")
+    @PostMapping(value = "/create-by-file", consumes = "multipart/form-data")
     public ResponseEntity<Object> createByFile(@RequestParam("file") MultipartFile file) {
         try {
             if (file.isEmpty()) {
