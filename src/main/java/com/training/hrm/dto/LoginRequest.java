@@ -12,12 +12,15 @@ public class LoginRequest {
     @NotBlank(message = "Please enter a valid password")
     private String password;
 
+    private String verificationCode;
+
     public LoginRequest() {
     }
 
-    public LoginRequest(String username, String password) {
+    public LoginRequest(String username, String password, String verificationCode) {
         this.username = username;
         this.password = password;
+        this.verificationCode = verificationCode;
     }
 
     public @NotBlank(message = "Please enter a valid username") String getUsername() {
@@ -34,5 +37,13 @@ public class LoginRequest {
 
     public void setPassword(@NotBlank(message = "Please enter a valid password") String password) {
         this.password = password;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
     }
 }

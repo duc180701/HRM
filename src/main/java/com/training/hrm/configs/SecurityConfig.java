@@ -3,24 +3,18 @@ package com.training.hrm.configs;
 import com.training.hrm.customservices.CustomAccessDeniedHandler;
 import com.training.hrm.customservices.CustomUserDetailsService;
 import com.training.hrm.repositories.RoleRepository;
-import com.training.hrm.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.List;
@@ -60,11 +54,15 @@ public class SecurityConfig {
                                 "/user/login",
                                 "/user/forgot-password/**",
                                 "/user/change-password",
-                                "/backup/**",
                                 "/report/**",
                                 "/user/create/**",
                                 "/attendance/**").permitAll()
                         .requestMatchers("/role/**").hasAuthority("HE_THONG")
+                        .requestMatchers(
+                                "/backup/read-backup-personnel-position/**",
+                                "/backup/read-backup-personnel-department/**",
+                                "/backup/read-backup-employee-contract/",
+                                "/backup/read-backup-contract/**").hasAnyAuthority("HE_THONG", "ADMIN")
                         .requestMatchers(
                                 "/employee/update/**",
                                 "/employee/delete/**",

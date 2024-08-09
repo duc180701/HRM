@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,6 +30,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -107,39 +112,6 @@ public class UserController {
         }
     }
 
-//    @Operation(summary = "Update user by ID")
-//    @PostMapping("/update/{userID}")
-//    public ResponseEntity<Object> updateUser(@PathVariable String userID, @Valid @RequestBody User user, BindingResult result) {
-//        try {
-//            if (result.hasErrors()) {
-//                throw new BadRequestException(result.getAllErrors().get(0).getDefaultMessage());
-//            }
-//            User exitsUser = userRepository.findUserByUserID(Long.parseLong(userID));
-//            if (exitsUser == null) {
-//                throw new InvalidException("User not found");
-//            }
-//            if (employeeRepository.findEmployeeByEmployeeID(user.getEmployeeID()) == null) {
-//                throw new InvalidException("Employee not found");
-//            }
-//            if (userRepository.findUserByEmployeeID(user.getEmployeeID()) != null) {
-//                throw new BadRequestException("This employee already has an account");
-//            }
-//            if (userRepository.findUserByUsername(user.getUsername()) != null) {
-//                throw new BadRequestException("User already exits");
-//            }
-//            User updateUser = userService.updateUser(exitsUser, user);
-//            return new ResponseEntity<>(updateUser, HttpStatus.OK);
-//        } catch (NumberFormatException e) {
-//            return new ResponseEntity<>("Invalid user ID format", HttpStatus.BAD_REQUEST);
-//        } catch (InvalidException e) {
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-//        } catch (ServiceRuntimeException e) {
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-//        }
-//    }
-
     @Operation(summary = "Delete a user by ID")
     @PostMapping("/delete/{userID}")
     public ResponseEntity<Object> deleteUser(@PathVariable String userID) {
@@ -175,23 +147,61 @@ public class UserController {
         }
     }
 
+    private static final int MAX_FAILED_ATTEMPTS = 3;
+    // Lưu số lần đăng nhập sai cho từng người dùng
+    private static final Map<String, Integer> failedAttempts = new HashMap<>();
+    // Lưu mã được tạo ra cho từng người dùng khi đăng nhập sai tối đa
+    private static final Map<String, String> verificationCodes = new HashMap<>();
+
+    private String generateVerificationCode() {
+        SecureRandom random = new SecureRandom();
+        return new BigInteger(130, random).toString(32);
+    }
+
     @Operation(summary = "Login with the created account and password")
     @PostMapping("/login")
     public ResponseEntity<Object> loginUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult result) {
         try {
-            if(result.hasErrors()) {
+            if (result.hasErrors()) {
                 throw new BadRequestException(result.getAllErrors().get(0).getDefaultMessage());
             }
-            if (userRepository.findUserByUsername(loginRequest.getUsername()) == null) {
+            User user = userRepository.findUserByUsername(loginRequest.getUsername());
+            if (user == null) {
                 throw new InvalidException("User not found");
             }
+
+            // Kiểm ra số lần đăng nhập sai và mã xác thực
+            if (failedAttempts.getOrDefault(loginRequest.getUsername(), 0) >= MAX_FAILED_ATTEMPTS) {
+                if (loginRequest.getVerificationCode() == null || loginRequest.getVerificationCode().isEmpty()) {
+                    throw new BadRequestException("Please enter a valid verification code");
+                }
+                if (!loginRequest.getVerificationCode().equals(verificationCodes.get(loginRequest.getUsername()))) {
+                    throw new BadRequestException("Invalid verification code");
+                }
+            }
+
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
+
+            // Reset failed attempts on successful login
+            failedAttempts.put(loginRequest.getUsername(), 0);
+
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginRequest.getUsername());
             String jwt = jwtUtil.generateToken(userDetails);
 
             return new ResponseEntity<>(jwt, HttpStatus.OK);
+        } catch (BadCredentialsException e) {
+            int attempts = failedAttempts.getOrDefault(loginRequest.getUsername(), 0);
+            failedAttempts.put(loginRequest.getUsername(), attempts + 1);
+
+            if (failedAttempts.get(loginRequest.getUsername()) >= MAX_FAILED_ATTEMPTS) {
+                String verificationCode = generateVerificationCode();
+                verificationCodes.put(loginRequest.getUsername(), verificationCode);
+                return new ResponseEntity<>(Map.of("verificationCode", verificationCode), HttpStatus.UNAUTHORIZED);
+            }
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (InvalidException e) {
