@@ -6,6 +6,7 @@ import com.training.hrm.models.*;
 import com.training.hrm.repositories.*;
 import com.training.hrm.services.BackupService;
 import com.training.hrm.services.ContractService;
+import com.training.hrm.services.PersonnelService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/backup")
 public class BackupController {
+
+    @Autowired
+    private PersonnelService personnelService;
+
+    @Autowired
+    private PersonnelRepository personnelRepository;
 
     @Autowired
     private ApproveBackupContractRepository approveBackupContractRepository;
@@ -114,6 +121,44 @@ public class BackupController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (ServiceRuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "Get all personnel position need update in approve position list")
+    @GetMapping("/read-all-approve-personnel-position")
+    public ResponseEntity<Object> getAllApprovePersonnelPosition() {
+        try {
+            List<ApproveBackupPosition> listApproveBackupPosition = backupService.getAllApproveBackupPosition();
+
+            return new ResponseEntity<>(listApproveBackupPosition, HttpStatus.OK);
+        } catch (InvalidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "Approve update position by backup personnel position ID")
+    @PostMapping("/approve-personnel-position/{backupPersonnelPositionID}")
+    public ResponseEntity<Object> approveUpdatePersonnelPosition(@PathVariable String backupPersonnelPositionID) {
+        try {
+            Long id = Long.parseLong(backupPersonnelPositionID);
+            ApproveBackupPosition approveBackupPosition = backupService.approveBackupPosition(id); //Set approve to true
+            Personnel oldPersonnel = personnelRepository.findPersonnelByPersonnelID(approveBackupPosition.getPersonnelID());
+            backupService.createBackupPersonnelPosition(approveBackupPosition.getPersonnelID());
+            Personnel updatePersonnel = personnelService.updatePersonnelPosition(oldPersonnel, approveBackupPosition);
+
+            return new ResponseEntity<>(updatePersonnel, HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>("Please enter a valid backup contact ID", HttpStatus.BAD_REQUEST);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (InvalidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

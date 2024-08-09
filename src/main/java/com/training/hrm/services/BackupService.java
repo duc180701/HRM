@@ -1,6 +1,7 @@
 package com.training.hrm.services;
 
 import com.training.hrm.dto.ContractRequest;
+import com.training.hrm.dto.PersonnelRequest;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.*;
@@ -13,6 +14,9 @@ import java.util.List;
 
 @Service
 public class BackupService {
+
+    @Autowired
+    private ApproveBackupPositionRepository approveBackupPositionRepository;
 
     @Autowired
     private ApproveBackupContractRepository approveBackupContractRepository;
@@ -108,6 +112,57 @@ public class BackupService {
             return backupEmployeeContractRepository.save(backupEmployeeContract);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while back up this employee contract: " + e.getMessage());
+        }
+    }
+
+    public ApproveBackupPosition createApproveBackupPosition(Long personnelID, PersonnelRequest personnelRequest) throws ServiceRuntimeException, InvalidException {
+        try {
+            Personnel personnel = personnelRepository.findPersonnelByPersonnelID(personnelID);
+            if (personnel == null) {
+                throw new InvalidException("Personnel not found");
+            }
+            ApproveBackupPosition approveBackupPosition = new ApproveBackupPosition();
+            approveBackupPosition.setPersonnelID(personnelID);
+            approveBackupPosition.setOldPosition(personnel.getPosition());
+            approveBackupPosition.setNewPosition(personnelRequest.getPosition());
+            approveBackupPosition.setDate(LocalDate.now());
+            approveBackupPosition.setReason("WAITING TO APPROVE");
+            approveBackupPosition.setApprove(false);
+
+            return approveBackupPositionRepository.save(approveBackupPosition);
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while creating the position change: " + e.getMessage());
+        }
+    }
+
+    public List<ApproveBackupPosition> getAllApproveBackupPosition() throws ServiceRuntimeException, InvalidException {
+        try {
+            List<ApproveBackupPosition> listApproveBackupPosition = approveBackupPositionRepository.findAll();
+            if (listApproveBackupPosition.isEmpty()) {
+                throw new InvalidException("List approve backup position is empty");
+            }
+
+            return listApproveBackupPosition;
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while get approve backup position list: " + e.getMessage());
+        }
+    }
+
+    public ApproveBackupPosition approveBackupPosition(Long id) throws InvalidException, ServiceRuntimeException {
+        try {
+            ApproveBackupPosition approveBackupPosition = approveBackupPositionRepository.findApproveBackupPositionByApproveBackupPositionID(id);
+            approveBackupPosition.setApprove(true);
+            approveBackupPosition.setReason("APPROVED");
+
+            return approveBackupPositionRepository.save(approveBackupPosition);
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while approve backup position: " + e.getMessage());
         }
     }
 

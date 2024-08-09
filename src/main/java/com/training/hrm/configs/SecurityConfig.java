@@ -83,7 +83,9 @@ public class SecurityConfig {
                                 "/user/read/**"
                                 ).hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "NHAN_VIEN_NS", "HE_THONG")
                         .requestMatchers("/backup/approve-contract/**",
-                                "/backup/read-all-approve-contract/**").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "HE_THONG")
+                                "/backup/read-all-approve-contract/**",
+                                "/backup/read-all-approve-personnel-position/**",
+                                "/backup/approve-personnel-position/**").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "HE_THONG")
                         .requestMatchers("/backup/read-backup-contract/**").hasAnyAuthority("ADMIN", "HE_THONG", "BAN_GIAM_DOC", "TRUONG_PHONG_NS", "PHO_PHONG_NS", "NHAN_VIEN_NS")
                         .requestMatchers(
                                 "/employee/search/**",

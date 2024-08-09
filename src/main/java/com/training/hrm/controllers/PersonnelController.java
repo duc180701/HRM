@@ -69,7 +69,8 @@ public class PersonnelController {
     @PostMapping("/update/{personnelID}")
     public ResponseEntity<Object> updatePersonnel(@PathVariable String personnelID, @Valid @RequestBody PersonnelRequest personnelRequest, BindingResult result) {
         try {
-            Personnel exitsPersonnel = personnelRepository.findPersonnelByPersonnelID(Long.parseLong(personnelID));
+            Long id = Long.parseLong(personnelID);
+            Personnel exitsPersonnel = personnelRepository.findPersonnelByPersonnelID(id);
 
             if (exitsPersonnel == null) {
                 throw new InvalidException("Personnel not found");
@@ -90,12 +91,14 @@ public class PersonnelController {
                 }
             }
 
-            // Backup
+            // Backup to waiting approve
             if (!exitsPersonnel.getPosition().equals(personnelRequest.getPosition())) {
-                backupService.createBackupPersonnelPosition(Long.parseLong(personnelID));
+                backupService.createApproveBackupPosition(id, personnelRequest);
+                return new ResponseEntity<>("Information added successfully, please wait for approval", HttpStatus.OK);
             }
+            // Backup
             if (!exitsPersonnel.getDepartment().equals(personnelRequest.getDepartment())) {
-                backupService.createBackupPersonnelDepartment(Long.parseLong(personnelID));
+                backupService.createBackupPersonnelDepartment(id);
             }
 
             Personnel updatePersonnel = personnelService.updatePersonnel(exitsPersonnel, personnelRequest);

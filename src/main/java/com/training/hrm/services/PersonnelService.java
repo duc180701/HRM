@@ -3,6 +3,7 @@ package com.training.hrm.services;
 import com.training.hrm.dto.PersonnelRequest;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
+import com.training.hrm.models.ApproveBackupPosition;
 import com.training.hrm.models.Personnel;
 import com.training.hrm.repositories.PersonnelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,16 @@ public class PersonnelService {
             return findPersonnel;
         } catch (InvalidException e) {
             throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while reading the personnel: " + e.getMessage());
+        }
+    }
+
+    public Personnel updatePersonnelPosition(Personnel exitsPersonnel, ApproveBackupPosition approveBackupPosition) throws ServiceRuntimeException {
+        try {
+            exitsPersonnel.setPosition(approveBackupPosition.getNewPosition());
+
+            return personnelRepository.save(exitsPersonnel);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while reading the personnel: " + e.getMessage());
         }
