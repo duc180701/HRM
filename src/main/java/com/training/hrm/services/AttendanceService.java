@@ -145,7 +145,7 @@ public class AttendanceService {
             Sheet sheet = workbook.getSheetAt(0);
 
             for (Row row : sheet) {
-                if(row.getRowNum() == 0) {
+                if (row.getRowNum() == 0) {
                     continue;
                 }
                 String mnv = row.getCell(0).getStringCellValue();
@@ -165,8 +165,8 @@ public class AttendanceService {
                     throw new InvalidException("Please enter a valid date");
                 }
                 try {
-                   LocalDate formatDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                   attendance.setDate(formatDate);
+                    LocalDate formatDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                    attendance.setDate(formatDate);
                 } catch (DateTimeParseException e) {
                     throw new IllegalArgumentException("Invalid date format. Please use dd-MM-YYYY.");
                 }
@@ -221,6 +221,8 @@ public class AttendanceService {
 
                 attendanceRepository.save(attendance);
             }
+        } catch (IOException e) {
+            throw new IOException("An error occurred while system reading this file: " + e.getMessage());
         } catch (InvalidException e) {
             throw e;
         } catch (NumberFormatException e) {

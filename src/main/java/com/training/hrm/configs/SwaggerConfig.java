@@ -20,21 +20,6 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 .build();
     }
 
-    // Cấu hình các tham số, tắt kiểm tra validator url
-//    @Bean
-//    public SwaggerUiConfigProperties swaggerUiConfigProperties() {
-//        SwaggerUiConfigProperties swaggerUiConfigProperties = new SwaggerUiConfigProperties();
-//        swaggerUiConfigProperties.setValidatorUrl(null);
-//        return swaggerUiConfigProperties;
-//    }
-//
-//    @Bean
-//    public SwaggerUiConfigParameters swaggerUiConfigParameters(SwaggerUiConfigProperties swaggerUiConfigProperties) {
-//        SwaggerUiConfigParameters swaggerUiConfigParameters = new SwaggerUiConfigParameters();
-//        swaggerUiConfigParameters.setValidatorUrl(swaggerUiConfigProperties.getValidatorUrl());
-//        return swaggerUiConfigParameters;
-//    }
-
     @Bean
     // Cấu hình bảo mật sử dụng JWT
     public OpenAPI customOpenAPI() {
