@@ -147,15 +147,26 @@ public class UserController {
         }
     }
 
+    // Số lần đăng nhập sai tối đa
     private static final int MAX_FAILED_ATTEMPTS = 3;
     // Lưu số lần đăng nhập sai cho từng người dùng
     private static final Map<String, Integer> failedAttempts = new HashMap<>();
     // Lưu mã được tạo ra cho từng người dùng khi đăng nhập sai tối đa
     private static final Map<String, String> verificationCodes = new HashMap<>();
 
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final int LENGTH = 5; // Độ dài chuỗi mã xác thực
+
     private String generateVerificationCode() {
         SecureRandom random = new SecureRandom();
-        return new BigInteger(130, random).toString(32);
+        StringBuilder sb = new StringBuilder(LENGTH);
+
+        for (int i = 0; i < LENGTH; i++) {
+            int index = random.nextInt(CHARACTERS.length());
+            sb.append(CHARACTERS.charAt(index));
+        }
+
+        return sb.toString();
     }
 
     @Operation(summary = "Login with the created account and password")
