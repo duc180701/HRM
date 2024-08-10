@@ -17,10 +17,10 @@ public class RateLimiterInterceptor implements HandlerInterceptor {
 
     private final Map<String, UserRequestInfo> requestMap = new HashMap<>();
     private final SystemRequestInfo systemRequestInfo = new SystemRequestInfo();
-    private static final int MAX_REQUESTS_PER_USER = 3; // Số lượng request tối đa
-    private static final long TIME_FRAME_PER_USER = 60 * 1000; // Thời gian 1 phút tính bằng milliseconds
-    private static final int MAX_REQUESTS_SYSTEM = 3000; // Số lượng request tối đa toàn hệ thống
-    private static final long TIME_FRAME_SYSTEM = 60 * 60 * 1000; // Thời gian 1 giờ tính bằng milliseconds
+    private static final int MAX_REQUESTS_PER_USER = 3;
+    private static final long TIME_FRAME_PER_USER = 60 * 1000;
+    private static final int MAX_REQUESTS_SYSTEM = 3000;
+    private static final long TIME_FRAME_SYSTEM = 60 * 60 * 1000;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -59,8 +59,6 @@ public class RateLimiterInterceptor implements HandlerInterceptor {
                 updatedRequestTimes.add(time);
             }
         }
-
-        System.out.println(userRequestInfo.getRequestTimes().size());
 
         // Kiểm tra nếu số lượng request vượt quá giới hạn
         if (userRequestInfo.getRequestTimes().size() >= MAX_REQUESTS_PER_USER) {
