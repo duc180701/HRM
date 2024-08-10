@@ -85,7 +85,7 @@ public class ContractController {
                     || !exitsContract.getSalary().equals(contractRequest.getSalary())
                     || !exitsContract.getStartDate().isEqual(contractRequest.getStartDate())
                     || !exitsContract.getEndDate().isEqual(contractRequest.getEndDate())) {
-                backupService.createApproveUpdateContract(id, contractRequest);
+                backupService.createApproveUpdateContract(id, contractRequest, exitsContract);
             }
 
             return new ResponseEntity<>("Information added successfully, please wait for approval", HttpStatus.OK);

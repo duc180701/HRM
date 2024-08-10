@@ -44,6 +44,9 @@ public class ApproveBackupContract {
     @Column(name = "approve")
     private boolean approve;
 
+    @Column(name = "version")
+    private Integer version;
+
     public ApproveBackupContract() {
     }
 
@@ -57,6 +60,14 @@ public class ApproveBackupContract {
         this.date = date;
         this.reason = reason;
         this.approve = approve;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     public Long getApproveBackupContractID() {

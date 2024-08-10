@@ -26,6 +26,9 @@ public class Contract {
     @Column(name = "end_date")
     private LocalDate endDate;
 
+    @Column(name = "version")
+    private Integer version;
+
     public Contract() {
     }
 
@@ -35,6 +38,14 @@ public class Contract {
         this.salary = salary;
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     public Long getContractID() {

@@ -8,6 +8,7 @@ import com.training.hrm.recoveries.RecoveryContract;
 import com.training.hrm.repositories.ContractRepository;
 import com.training.hrm.repositories.RecoveryContractRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,6 +28,7 @@ public class ContractService {
             contract.setSalary(contractRequest.getSalary());
             contract.setStartDate(contractRequest.getStartDate());
             contract.setEndDate(contractRequest.getEndDate());
+            contract.setVersion(1);
 
             return contractRepository.save(contract);
         } catch (ServiceRuntimeException e) {
@@ -49,6 +51,7 @@ public class ContractService {
             updateContract.setContractType(approveBackupContract.getContractType());
             updateContract.setStartDate(approveBackupContract.getStartDate());
             updateContract.setEndDate(approveBackupContract.getEndDate());
+            updateContract.setVersion(approveBackupContract.getVersion() + 1);
 
             return contractRepository.save(updateContract);
         } catch (ServiceRuntimeException e) {

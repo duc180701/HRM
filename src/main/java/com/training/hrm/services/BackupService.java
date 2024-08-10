@@ -166,7 +166,7 @@ public class BackupService {
         }
     }
 
-    public ApproveBackupContract createApproveUpdateContract(Long id, ContractRequest contractRequest) throws ServiceRuntimeException, InvalidException {
+    public ApproveBackupContract createApproveUpdateContract(Long id, ContractRequest contractRequest, Contract exitsContract) throws ServiceRuntimeException, InvalidException {
         try {
             ApproveBackupContract approveBackupContract = new ApproveBackupContract();
             approveBackupContract.setContractID(id);
@@ -177,6 +177,7 @@ public class BackupService {
             approveBackupContract.setReason("WAIT TO APPROVE");
             approveBackupContract.setDate(LocalDate.now());
             approveBackupContract.setApprove(false);
+            approveBackupContract.setVersion(exitsContract.getVersion());
 
             return approveBackupContractRepository.save(approveBackupContract);
         } catch (InvalidException e) {
@@ -207,6 +208,19 @@ public class BackupService {
             approveBackupContract.setApprove(true);
             approveBackupContract.setReason("APPROVED");
             return approveBackupContractRepository.save(approveBackupContract);
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while approve backup contract: " + e.getMessage());
+        }
+    }
+
+    public void rejectBackupContract(Long id) throws InvalidException, ServiceRuntimeException {
+        try {
+            ApproveBackupContract approveBackupContract = approveBackupContractRepository.findApproveBackupContractByApproveBackupContractID(id);
+            approveBackupContract.setApprove(true);
+            approveBackupContract.setReason("APPROVE DENIED");
+            approveBackupContractRepository.save(approveBackupContract);
         } catch (InvalidException e) {
             throw e;
         } catch (ServiceRuntimeException e) {
