@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Date;
 
 @Service
 public class AttendanceService {
@@ -145,28 +146,35 @@ public class AttendanceService {
             Sheet sheet = workbook.getSheetAt(0);
 
             for (Row row : sheet) {
-                if (row.getRowNum() == 0) {
+                if (row.getRowNum() == 0 || row.getRowNum() == 1) {
                     continue;
                 }
-                String mnv = row.getCell(0).getStringCellValue();
-                if (mnv.isBlank()) {
+                double mnv = row.getCell(1).getNumericCellValue();
+                System.out.println(mnv);
+                if (String.valueOf(mnv).isBlank()) {
                     throw new InvalidException("Please enter a valid employee id");
                 } else {
                     try {
-                        Long employeeID = Long.parseLong(mnv);
+                        long employeeID = (long) mnv;
                         attendance.setEmployeeID(employeeID);
                     } catch (NumberFormatException e) {
                         throw new NumberFormatException("Error converting employee id from string to long");
                     }
                 }
 
-                String date = row.getCell(2).getStringCellValue();
-                if (date.isBlank()) {
+                Date date = row.getCell(5).getDateCellValue();
+                System.out.println(date);
+                if (String.valueOf(date).isBlank()) {
                     throw new InvalidException("Please enter a valid date");
                 }
                 try {
-                    LocalDate formatDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                    attendance.setDate(formatDate);
+                    DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+                    LocalDate localDate = LocalDate.parse(String.valueOf(date), inputFormatter);
+                    DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    String formattedDate = localDate.format(outputFormatter);
+                    LocalDate finalDate = LocalDate.parse(formattedDate);
+                    System.out.println(finalDate);
+                    attendance.setDate(finalDate);
                 } catch (DateTimeParseException e) {
                     throw new IllegalArgumentException("Invalid date format. Please use dd-MM-YYYY.");
                 }

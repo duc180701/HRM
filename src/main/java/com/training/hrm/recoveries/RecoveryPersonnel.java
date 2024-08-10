@@ -1,13 +1,16 @@
-package com.training.hrm.models;
-
+package com.training.hrm.recoveries;
 
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "personnels")
-public class Personnel {
+@Table(name = "recovery_personnel")
+public class RecoveryPersonnel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long recoveryPersonnelID;
+
+    @Column(name = "personnel_id")
     private Long personnelID;
 
     @Column(name = "level")
@@ -46,10 +49,11 @@ public class Personnel {
     @Column(name = "status")
     private String status;
 
-    public Personnel() {
+    public RecoveryPersonnel() {
     }
 
-    public Personnel(Long personnelID, String level, String education, String graduationMajor, String graduationSchool, int graduationYear, String internalPhoneNumber, String internalEmail, String employeeAccount, String department, String position, String directManagementStaff, String status) {
+    public RecoveryPersonnel(Long recoveryPersonnelID, Long personnelID, String level, String education, String graduationMajor, String graduationSchool, int graduationYear, String internalPhoneNumber, String internalEmail, String employeeAccount, String department, String position, String directManagementStaff, String status) {
+        this.recoveryPersonnelID = recoveryPersonnelID;
         this.personnelID = personnelID;
         this.level = level;
         this.education = education;
@@ -63,6 +67,14 @@ public class Personnel {
         this.position = position;
         this.directManagementStaff = directManagementStaff;
         this.status = status;
+    }
+
+    public Long getRecoveryPersonnelID() {
+        return recoveryPersonnelID;
+    }
+
+    public void setRecoveryPersonnelID(Long recoveryPersonnelID) {
+        this.recoveryPersonnelID = recoveryPersonnelID;
     }
 
     public Long getPersonnelID() {
@@ -129,6 +141,14 @@ public class Personnel {
         this.internalEmail = internalEmail;
     }
 
+    public String getEmployeeAccount() {
+        return employeeAccount;
+    }
+
+    public void setEmployeeAccount(String employeeAccount) {
+        this.employeeAccount = employeeAccount;
+    }
+
     public String getDepartment() {
         return department;
     }
@@ -159,13 +179,5 @@ public class Personnel {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getEmployeeAccount() {
-        return employeeAccount;
-    }
-
-    public void setEmployeeAccount(String employeeAccount) {
-        this.employeeAccount = employeeAccount;
     }
 }

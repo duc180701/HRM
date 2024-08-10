@@ -11,7 +11,6 @@ import com.training.hrm.services.ContractService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -101,6 +100,7 @@ public class ContractController {
         }
     }
 
+    @Operation(summary = "Delete a contract by ID")
     @PostMapping("/delete/{contractID}")
     public ResponseEntity<Object> deleteContract(@PathVariable String contractID) {
         try {

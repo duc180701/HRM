@@ -52,22 +52,13 @@ public class PersonnelRequest {
     @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Direct management staff must contain only uppercase and lowercase letters")
     private String directManagementStaff;
 
-    @Enumerated(EnumType.STRING)
     @NotNull(message = "Please enter a valid status")
-    private Status status;
-
-    public enum Status {
-        THU_VIEC,
-        DA_NGHI_VIEC,
-        DANG_LAM_VIEC,
-        NGHI_CHE_DO,
-        NGHI_THAI_SAN
-    }
+    private String status;
 
     public PersonnelRequest() {
     }
 
-    public PersonnelRequest(String level, String education, String graduationMajor, String graduationSchool, int graduationYear, String internalPhoneNumber, String internalEmail, String employeeAccount, String department, String position, String directManagementStaff, Status status) {
+    public PersonnelRequest(String level, String education, String graduationMajor, String graduationSchool, int graduationYear, String internalPhoneNumber, String internalEmail, String employeeAccount, String department, String position, String directManagementStaff, String status) {
         this.level = level;
         this.education = education;
         this.graduationMajor = graduationMajor;
@@ -171,11 +162,11 @@ public class PersonnelRequest {
         this.directManagementStaff = directManagementStaff;
     }
 
-    public Status getStatus() {
+    public @NotNull(message = "Please enter a valid status") String getStatus() {
         return status;
     }
 
-    public void setStatus(@NotNull(message = "Please enter a valid status") Status status) {
+    public void setStatus(@NotNull(message = "Please enter a valid status") String status) {
         this.status = status;
     }
 }

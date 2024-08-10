@@ -11,6 +11,7 @@ import com.training.hrm.models.Personnel;
 import com.training.hrm.repositories.*;
 import com.training.hrm.services.BackupService;
 import com.training.hrm.services.EmployeeService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.spel.ast.OpAnd;
@@ -49,6 +50,7 @@ public class EmployeeController {
     @Autowired
     private BackupService backupService;
 
+    @Operation(summary = "Create new employee")
     @PostMapping("/create")
     public ResponseEntity<Object> createEmployee(@Valid @RequestBody EmployeeRequest employeeRequest, BindingResult result) {
         try {
@@ -88,6 +90,7 @@ public class EmployeeController {
         }
     }
 
+    @Operation(summary = "Read a employee by employee ID")
     @GetMapping("/read/{employeeID}")
     public ResponseEntity<Object> readEmployee(@PathVariable String employeeID) {
         try {
@@ -107,6 +110,7 @@ public class EmployeeController {
         }
     }
 
+    @Operation(summary = "Update a employee by employee ID")
     @PostMapping("/update/{employeeID}")
     public ResponseEntity<Object> updateEmployee(@PathVariable String employeeID, @Valid @RequestBody EmployeeRequest employeeRequest, BindingResult result) {
         try {
@@ -156,6 +160,7 @@ public class EmployeeController {
         }
     }
 
+    @Operation(summary = "Delete a employee by ID")
     @PostMapping("/delete/{employeeID}")
     public ResponseEntity<Object> deleteEmployee(@PathVariable String employeeID) {
         try {

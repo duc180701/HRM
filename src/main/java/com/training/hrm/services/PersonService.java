@@ -4,12 +4,17 @@ import com.training.hrm.dto.PersonRequest;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.Person;
+import com.training.hrm.recoveries.RecoveryPerson;
 import com.training.hrm.repositories.PersonRepository;
+import com.training.hrm.repositories.RecoveryPersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PersonService {
+
+    @Autowired
+    private RecoveryPersonRepository recoveryPersonRepository;
 
     @Autowired
     private PersonRepository personRepository;
@@ -92,6 +97,36 @@ public class PersonService {
             if (person == null) {
                 throw new InvalidException("Person not found");
             }
+
+            //Backup
+            RecoveryPerson recoveryPerson = new RecoveryPerson();
+            recoveryPerson.setPersonID(id);
+            recoveryPerson.setFullName(person.getFullName());
+            recoveryPerson.setGender(person.getGender());
+            recoveryPerson.setBirthOfDate(person.getBirthOfDate());
+
+            RecoveryPerson.CitizenIdentity recoveryPersonCitizen = new RecoveryPerson.CitizenIdentity();
+            recoveryPersonCitizen.setCitizenIdentityID(person.getCitizenIdentity().getCitizenIdentityID());
+            recoveryPersonCitizen.setCitizenIdentityDate(person.getCitizenIdentity().getCitizenIdentityDate());
+            recoveryPersonCitizen.setCitizenIdentityWhere(person.getCitizenIdentity().getCitizenIdentityWhere());
+            recoveryPersonCitizen.setCitizenIdentityOutDate(person.getCitizenIdentity().getCitizenIdentityOutDate());
+            recoveryPerson.setCitizenIdentity(recoveryPersonCitizen);
+
+            RecoveryPerson.PassPort recoveryPersonPass = new RecoveryPerson.PassPort();
+            recoveryPersonPass.setPassPortID(person.getPassPort().getPassPortID());
+            recoveryPersonPass.setPassPortDate(person.getPassPort().getPassPortDate());
+            recoveryPersonPass.setPassPortWhere(person.getPassPort().getPassPortWhere());
+            recoveryPersonPass.setPassPortOutDate(person.getPassPort().getPassPortOutDate());
+            recoveryPerson.setPassPort(recoveryPersonPass);
+
+            recoveryPerson.setPermanentAddress(person.getPermanentAddress());
+            recoveryPerson.setCurrentAddress(person.getCurrentAddress());
+            recoveryPerson.setPhoneNumber(person.getPhoneNumber());
+            recoveryPerson.setEmail(person.getEmail());
+
+            recoveryPersonRepository.save(recoveryPerson);
+
+            personRepository.deleteById(id);
         } catch (InvalidException e) {
             throw e;
         } catch (Exception e) {

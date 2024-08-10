@@ -62,7 +62,8 @@ public class SecurityConfig {
                                 "/backup/read-backup-personnel-position/**",
                                 "/backup/read-backup-personnel-department/**",
                                 "/backup/read-backup-employee-contract/",
-                                "/backup/read-backup-contract/**").hasAnyAuthority("HE_THONG", "ADMIN")
+                                "/backup/read-backup-contract/**",
+                                "/recovery/**").hasAnyAuthority("HE_THONG", "ADMIN")
                         .requestMatchers(
                                 "/employee/update/**",
                                 "/employee/delete/**",

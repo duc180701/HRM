@@ -8,6 +8,7 @@ import com.training.hrm.models.Personnel;
 import com.training.hrm.repositories.PersonnelRepository;
 import com.training.hrm.services.BackupService;
 import com.training.hrm.services.PersonnelService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -116,6 +117,7 @@ public class PersonnelController {
         }
     }
 
+    @Operation(summary = "Delete personnel by personnel ID")
     @PostMapping("/delete/{personnelID}")
     public ResponseEntity<Object> deletePersonnel(@PathVariable String personnelID) {
         try {

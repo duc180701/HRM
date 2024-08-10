@@ -7,9 +7,11 @@ import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.Employee;
 import com.training.hrm.models.Person;
 import com.training.hrm.models.Personnel;
+import com.training.hrm.recoveries.RecoveryEmployee;
 import com.training.hrm.repositories.EmployeeRepository;
 import com.training.hrm.repositories.PersonRepository;
 import com.training.hrm.repositories.PersonnelRepository;
+import com.training.hrm.repositories.RecoveryEmployeeRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,9 @@ import java.util.List;
 
 @Service
 public class EmployeeService {
+
+    @Autowired
+    private RecoveryEmployeeRepository recoveryEmployeeRepository;
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -65,6 +70,16 @@ public class EmployeeService {
 
     public void deleteEmployee(Long id) throws ServiceRuntimeException {
         try {
+            Employee employee = employeeRepository.findEmployeeByEmployeeID(id);
+
+            //Backup
+            RecoveryEmployee recoveryEmployee = new RecoveryEmployee();
+            recoveryEmployee.setEmployeeID(id);
+            recoveryEmployee.setContractID(employee.getContractID());
+            recoveryEmployee.setPersonID(employee.getPersonID());
+            recoveryEmployee.setPersonnelID(employee.getPersonnelID());
+            recoveryEmployeeRepository.save(recoveryEmployee);
+
             employeeRepository.deleteById(id);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while deleting the employee: " + e.getMessage());

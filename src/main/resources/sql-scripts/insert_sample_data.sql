@@ -66,3 +66,14 @@ INSERT INTO roles (name, description) VALUES
 ('TRUONG_PHONG_CSKH', ''),
 ('PHO_PHONG_CSKH', ''),
 ('NHAN_VIEN_CSKH', '');
+
+-- Chèn dữ liệu mẫu vào bảng work_status
+INSERT INTO work_status (status_id, name, description) VALUES
+('TV', 'THU_VIEC', ''),
+('DNV', 'DA_NGHI_VIEC', ''),
+('DLV', 'DANG_LAM_VIEC', ''),
+('NCD', 'NGHI_CHE_DO', ''),
+('NTS', 'NGHI_THAI_SAN', '');
+
+INSERT INTO users (employee_id, user_name, pass_word, role, avatar) VALUES
+(1, 'duc180701', 'Mrp0np0n!', "HE_THONG", '');

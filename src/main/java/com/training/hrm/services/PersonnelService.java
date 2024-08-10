@@ -5,12 +5,23 @@ import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.ApproveBackupPosition;
 import com.training.hrm.models.Personnel;
+import com.training.hrm.recoveries.RecoveryPersonnel;
 import com.training.hrm.repositories.PersonnelRepository;
+import com.training.hrm.repositories.RecoveryPersonnelRepository;
+import com.training.hrm.repositories.WorkStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PersonnelService {
+
+    @Autowired
+    private RecoveryPersonnelRepository recoveryPersonnelRepository;
+
+    @Autowired
+    private WorkStatusRepository workStatusRepository;
 
     @Autowired
     private PersonnelRepository personnelRepository;
@@ -29,7 +40,15 @@ public class PersonnelService {
             personnel.setDepartment(personnelRequest.getDepartment());
             personnel.setPosition(personnelRequest.getPosition());
             personnel.setDirectManagementStaff(personnelRequest.getDirectManagementStaff());
-            personnel.setStatus(personnelRequest.getStatus().toString());
+
+            List<String> listStatus = workStatusRepository.findAllWorkStatusNames();
+            if (listStatus.contains(personnelRequest.getStatus())) {
+                personnel.setStatus(personnelRequest.getStatus());
+            } else {
+                throw new InvalidException("Please enter the status listed: " + listStatus);
+            }
+
+            personnel.setEmployeeAccount(personnelRequest.getEmployeeAccount());
 
             return personnelRepository.save(personnel);
         } catch (ServiceRuntimeException e) {
@@ -81,11 +100,30 @@ public class PersonnelService {
         }
     }
 
-    public void deletePersonnel(Long id) {
+    public void deletePersonnel(Long id) throws ServiceRuntimeException {
         try {
+            Personnel personnel = personnelRepository.findPersonnelByPersonnelID(id);
+
+            //Backup
+            RecoveryPersonnel recoveryPersonnel = new RecoveryPersonnel();
+            recoveryPersonnel.setPersonnelID(id);
+            recoveryPersonnel.setLevel(personnel.getLevel());
+            recoveryPersonnel.setEducation(personnel.getEducation());
+            recoveryPersonnel.setGraduationMajor(personnel.getGraduationMajor());
+            recoveryPersonnel.setGraduationSchool(personnel.getGraduationSchool());
+            recoveryPersonnel.setGraduationYear(personnel.getGraduationYear());
+            recoveryPersonnel.setInternalEmail(personnel.getInternalEmail());
+            recoveryPersonnel.setInternalPhoneNumber(personnel.getInternalPhoneNumber());
+            recoveryPersonnel.setEmployeeAccount(personnel.getEmployeeAccount());
+            recoveryPersonnel.setDepartment(personnel.getDepartment());
+            recoveryPersonnel.setPosition(personnel.getPosition());
+            recoveryPersonnel.setDirectManagementStaff(personnel.getDirectManagementStaff());
+            recoveryPersonnel.setStatus(personnel.getStatus());
+            recoveryPersonnelRepository.save(recoveryPersonnel);
+
             personnelRepository.deleteById(id);
         } catch (ServiceRuntimeException e) {
-            throw new ServiceRuntimeException("An error occurred while reading the personnel: " + e.getMessage());
+            throw new ServiceRuntimeException("An error occurred while deleting the personnel: " + e.getMessage());
         }
     }
 
