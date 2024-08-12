@@ -54,7 +54,6 @@ public class SecurityConfig {
                                 "/user/login",
                                 "/user/forgot-password/**",
                                 "/user/change-password",
-                                "/report/**",
                                 "/user/create/**").permitAll()
                         .requestMatchers(
                                 "/role/**",
@@ -81,7 +80,8 @@ public class SecurityConfig {
                                 "/contract/delete/**",
                                 "/employee/filter/**",
                                 "/user/delete/**",
-                                "/user/read/**"
+                                "/user/read/**",
+                                "/report/**"
                                 ).hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "NHAN_VIEN_NS", "HE_THONG")
                         .requestMatchers("/backup/approve-contract/**",
                                 "/backup/approve-personnel-position/**").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS")
@@ -90,6 +90,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/employee/search/**",
                                 "/employee/read/**",
+                                "employee/read-all-employee/**",
                                 "/person/read/**",
                                 "/personnel/read/**",
                                 "/contract/read/**",

@@ -29,6 +29,7 @@ public class PersonnelController {
     @Autowired
     private BackupService backupService;
 
+    @Operation(summary = "Create a new personnel")
     @PostMapping("/create")
     public ResponseEntity<Object> createPersonnel(@Valid @RequestBody PersonnelRequest personnelRequest, BindingResult result) {
             try {
@@ -50,6 +51,7 @@ public class PersonnelController {
             }
     }
 
+    @Operation(summary = "Read all information of a employee")
     @GetMapping("/read/{personnelID}")
     public ResponseEntity<Object> readPersonnel(@PathVariable String personnelID) {
         try {
@@ -67,6 +69,7 @@ public class PersonnelController {
         }
     }
 
+    @Operation(summary = "Update information for a employee")
     @PostMapping("/update/{personnelID}")
     public ResponseEntity<Object> updatePersonnel(@PathVariable String personnelID, @Valid @RequestBody PersonnelRequest personnelRequest, BindingResult result) {
         try {

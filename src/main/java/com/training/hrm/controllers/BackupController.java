@@ -69,6 +69,7 @@ public class BackupController {
         }
     }
 
+    @Operation(summary = "Read a backup personnel position by ID")
     @GetMapping("/read-backup-personnel-position/{backupPersonnelPositionID}")
     public ResponseEntity<Object> readBackupPersonnelPositionByBackupPersonnelPositionID(@PathVariable String backupPersonnelPositionID) {
         try {
@@ -88,6 +89,7 @@ public class BackupController {
         }
     }
 
+    @Operation(summary = "Read a backup personnel department by ID")
     @GetMapping("/read-backup-personnel-department/{backupPersonnelDepartmentID}")
     public ResponseEntity<Object> readBackupPersonnelDepartmentByBackupPersonnelDepartmentID(@PathVariable String backupPersonnelDepartmentID) {
         try {
@@ -107,6 +109,7 @@ public class BackupController {
         }
     }
 
+    @Operation(summary = "Read a backup employee contract by ID")
     @GetMapping("/read-backup-employee-contract/{backupEmployeeContractID}")
     public ResponseEntity<Object> readBackupEmployeeContractByBackupEmployeeContractID(@PathVariable String backupEmployeeContractID) {
         try {

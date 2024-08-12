@@ -14,8 +14,6 @@ import com.training.hrm.services.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.spel.ast.OpAnd;
-import org.springframework.http.HttpLogging;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/employee")
@@ -87,6 +84,21 @@ public class EmployeeController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "Get all employee in company")
+    @GetMapping("/read-all-employee")
+    public ResponseEntity<Object> readAllEmployee() {
+        try {
+            List<EmployeeResponse> listEmployee = employeeService.getAllEmployeeResponse();
+            return new ResponseEntity<>(listEmployee, HttpStatus.OK);
+        } catch (InvalidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An unexpected error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -182,6 +194,7 @@ public class EmployeeController {
         }
     }
 
+    @Operation(summary = "Search employee by phone number, email, full name, employee ID")
     @PostMapping("/search/{search}")
     public ResponseEntity<Object> searchEmployee(@PathVariable String search) {
         try {
@@ -220,6 +233,7 @@ public class EmployeeController {
         }
     }
 
+    @Operation(summary = "Filter employee by status, contract")
     @GetMapping("/filter/{condition}")
     public ResponseEntity<Object> filterEmployee (@PathVariable String condition) {
         try {

@@ -6,6 +6,7 @@ import com.training.hrm.models.BackupEmployeeContract;
 import com.training.hrm.models.BackupPersonnelDepartment;
 import com.training.hrm.models.BackupPersonnelPosition;
 import com.training.hrm.services.ReportService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ public class ReportController {
     @Autowired
     private ReportService reportService;
 
+    @Operation(summary = "Report the process of contract, position, department of a employees over time")
     @GetMapping("/backup-contract-position-department-a-employee")
     public ResponseEntity<Object> reportBackupContractPositionDepartmentOfAEmployee(@RequestParam(name = "employee_id") String employeeID, @RequestParam(name = "start_date") LocalDate startDate, @RequestParam(name = "end_date") LocalDate endDate) {
         try {
@@ -49,6 +51,7 @@ public class ReportController {
         }
     }
 
+    @Operation(summary = "Statistic the list of employee contract change over time")
     @GetMapping("/statistic-employee-contract-change")
     public ResponseEntity<Object> statisticEmployeeContractChange(@RequestParam(name = "start_date") LocalDate startDate, @RequestParam(name = "end_date") LocalDate endDate) {
         try {
@@ -72,6 +75,7 @@ public class ReportController {
         }
     }
 
+    @Operation(summary = "Statistic the list of personnel position change over time")
     @GetMapping("/statistic-personnel-position-change")
     public ResponseEntity<Object> statisticPersonnelPositionChange(@RequestParam(name = "start_date") LocalDate startDate, @RequestParam(name = "end_date") LocalDate endDate) {
         try {
@@ -95,6 +99,7 @@ public class ReportController {
         }
     }
 
+    @Operation(summary = "Statistic the list of personnel department change over time")
     @GetMapping("/statistic-personnel-department-change")
     public ResponseEntity<Object> statisticPersonnelDepartmentChange(@RequestParam(name = "start_date") LocalDate startDate, @RequestParam(name = "end_date") LocalDate endDate) {
         try {

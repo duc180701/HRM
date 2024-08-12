@@ -27,6 +27,7 @@ public class PersonController {
     @Autowired
     public PersonRepository personRepository;
 
+    @Operation(summary = "Create a new person")
     @PostMapping("/create")
     public ResponseEntity<Object> createPerson (@Valid @RequestBody PersonRequest personRequest, BindingResult result) {
         try {
@@ -48,6 +49,7 @@ public class PersonController {
         }
     }
 
+    @Operation(summary = "Read all information of a person")
     @GetMapping("/read/{personID}")
     public ResponseEntity<Object> readPerson(@PathVariable String personID) throws Exception {
         try {
@@ -65,6 +67,7 @@ public class PersonController {
         }
     }
 
+    @Operation(summary = "Update a person by person ID")
     @PostMapping("/update/{personID}")
     public ResponseEntity<Object> updatePerson(@PathVariable String personID, @Valid @RequestBody PersonRequest personRequest, BindingResult result) throws Exception {
         try {
