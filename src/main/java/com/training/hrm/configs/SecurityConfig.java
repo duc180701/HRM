@@ -55,15 +55,17 @@ public class SecurityConfig {
                                 "/user/forgot-password/**",
                                 "/user/change-password",
                                 "/report/**",
-                                "/user/create/**",
-                                "/attendance/**").permitAll()
-                        .requestMatchers("/role/**").hasAuthority("HE_THONG")
+                                "/user/create/**").permitAll()
+                        .requestMatchers(
+                                "/role/**",
+                                "/attendance/create-by-machine-attendance/**").hasAuthority("HE_THONG")
                         .requestMatchers(
                                 "/backup/read-backup-personnel-position/**",
                                 "/backup/read-backup-personnel-department/**",
                                 "/backup/read-backup-employee-contract/",
-                                "/backup/read-backup-contract/**",
-                                "/recovery/**").hasAnyAuthority("HE_THONG", "ADMIN")
+                                "/backup/read-backup-contract/**"
+                               ).hasAnyAuthority("HE_THONG", "ADMIN", "BAN_GIAM_DOC")
+                        .requestMatchers( "/recovery/**").hasAnyAuthority("BAN_GIAM_DOC", "HE_THONG")
                         .requestMatchers(
                                 "/employee/update/**",
                                 "/employee/delete/**",
@@ -82,10 +84,9 @@ public class SecurityConfig {
                                 "/user/read/**"
                                 ).hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "NHAN_VIEN_NS", "HE_THONG")
                         .requestMatchers("/backup/approve-contract/**",
-                                "/backup/read-all-approve-contract/**",
-                                "/backup/read-all-approve-personnel-position/**",
-                                "/backup/approve-personnel-position/**").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "HE_THONG")
-                        .requestMatchers("/backup/read-backup-contract/**").hasAnyAuthority("ADMIN", "HE_THONG", "BAN_GIAM_DOC", "TRUONG_PHONG_NS", "PHO_PHONG_NS", "NHAN_VIEN_NS")
+                                "/backup/approve-personnel-position/**").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS")
+                        .requestMatchers("/backup/read-all-approve-contract/**",
+                                "/backup/read-all-approve-personnel-position/**").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS",  "HE_THONG")
                         .requestMatchers(
                                 "/employee/search/**",
                                 "/employee/read/**",
