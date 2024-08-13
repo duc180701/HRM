@@ -1,6 +1,7 @@
 package com.training.hrm.models;
 
 import jakarta.persistence.*;
+import lombok.extern.apachecommons.CommonsLog;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,10 +33,13 @@ public class Attendance {
     @Column(name = "note")
     private String note;
 
+    @Column(name = "used")
+    private boolean used;
+
     public Attendance() {
     }
 
-    public Attendance(Long attendanceID, Long employeeID, LocalDate date, LocalTime workHour, LocalTime checkInTime, LocalTime checkOutTime, String note) {
+    public Attendance(Long attendanceID, Long employeeID, LocalDate date, LocalTime workHour, LocalTime checkInTime, LocalTime checkOutTime, String note, boolean used) {
         this.attendanceID = attendanceID;
         this.employeeID = employeeID;
         this.date = date;
@@ -43,6 +47,15 @@ public class Attendance {
         this.checkInTime = checkInTime;
         this.checkOutTime = checkOutTime;
         this.note = note;
+        this.used = used;
+    }
+
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
     }
 
     public Long getAttendanceID() {

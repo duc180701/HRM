@@ -31,12 +31,12 @@ INSERT INTO employees (personnel_id, person_id, contract_id) VALUES
 (5, 5, 0);
 
 -- Chèn dữ liệu mẫu vào bảng attendances
-INSERT INTO attendances (employee_id, date, work_hours, check_in_time, check_out_time, note) VALUES
-(1, '2023-07-30', 8.0, '08:00:00', '16:00:00', 'Normal workday'),
-(2, '2023-07-1', 7.5, '08:30:00', '16:00:00', 'Late check-in'),
-(3, '2023-07-2', 9.0, '08:00:00', '17:00:00', 'Overtime'),
-(4, '2023-07-3', 8.0, '09:00:00', '17:00:00', 'Meeting in the morning'),
-(5, '2023-07-4', 6.5, '08:00:00', '14:30:00', 'Left early for appointment');
+INSERT INTO attendances (employee_id, date, work_hours, check_in_time, check_out_time, note, used) VALUES
+(1, '2023-07-30', '08:00:00', '08:00:00', '16:00:00', 'Normal workday', false),
+(2, '2023-07-1', '07:30:00', '08:30:00', '16:00:00', 'Late check-in', false),
+(3, '2023-07-2', '09:00:00', '08:00:00', '17:00:00', 'Overtime', false),
+(4, '2023-07-3', '08:00:00', '09:00:00', '17:00:00', 'Meeting in the morning', false),
+(5, '2023-07-4', '06:30:00', '08:00:00', '14:30:00', 'Left early for appointment', false);
 
 -- Chèn dữ liệu mẫu vào bảng roles
 INSERT INTO roles (name, description) VALUES

@@ -49,11 +49,11 @@ public class SecurityConfig {
                 .csrf((csrf -> csrf.disable()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
+                                "/attendance/**",
                                 "/swagger-ui/**",
                                 "/v3/**",
                                 "/user/login",
                                 "/user/forgot-password/**",
-                                "/user/change-password",
                                 "/user/create/**").permitAll()
                         .requestMatchers(
                                 "/role/**",
@@ -65,6 +65,10 @@ public class SecurityConfig {
                                 "/backup/read-backup-contract/**"
                                ).hasAnyAuthority("HE_THONG", "ADMIN", "BAN_GIAM_DOC")
                         .requestMatchers( "/recovery/**").hasAnyAuthority("BAN_GIAM_DOC", "HE_THONG")
+                        .requestMatchers(
+                                "/attendance/create-by-manually/**",
+                                "/attendance/create-by-file/**").hasAnyAuthority("ADMIN", "HE_THONG")
+                        .requestMatchers("/attendance/read-attendance-by-time").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "NHAN_VIEN_NS", "HE_THONG", "ADMIN")
                         .requestMatchers(
                                 "/employee/update/**",
                                 "/employee/delete/**",
@@ -81,10 +85,12 @@ public class SecurityConfig {
                                 "/employee/filter/**",
                                 "/user/delete/**",
                                 "/user/read/**",
-                                "/report/**"
-                                ).hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "NHAN_VIEN_NS", "HE_THONG")
+                                "/report/**",
+                                "/attendance/create-attendance-table/**",
+                                "/attendance/update-attendance/{attendanceID}").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "NHAN_VIEN_NS", "HE_THONG")
                         .requestMatchers("/backup/approve-contract/**",
                                 "/backup/approve-personnel-position/**").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS")
+                        .requestMatchers("/attendance/approve-attendance-table/{month}").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "BAN_GIAM_DOC")
                         .requestMatchers("/backup/read-all-approve-contract/**",
                                 "/backup/read-all-approve-personnel-position/**").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS",  "HE_THONG")
                         .requestMatchers(
@@ -94,7 +100,8 @@ public class SecurityConfig {
                                 "/person/read/**",
                                 "/personnel/read/**",
                                 "/contract/read/**",
-                                "/user/avatar/**").hasAnyAuthority("HE_THONG","ADMIN","GUEST","NHAN_VIEN","BAN_GIAM_DOC","TRUONG_PHONG_HC","PHO_PHONG_HC","NHAN_VIEN_HC","TRUONG_PHONG_NS","PHO_PHONG_NS","NHAN_VIEN_NS","TRUONG_PHONG_TB","PHO_PHONG_TB","NHAN_VIEN_TB","TRUONG_PHONG_TT","PHO_PHONG_TT","NHAN_VIEN_TT","TO_TRUONG_MEDIA","TO_PHO_MEDIA","NHAN_VIEN_MEDIA","TO_TRUONG_SK","TO_PHO_SK","NHAN_VIEN_SK","TRUONG_PHONG_CSKH","PHO_PHONG_CSKH","NHAN_VIEN_CSKH")
+                                "/user/avatar/**",
+                                "/user/change-password").hasAnyAuthority("HE_THONG","ADMIN","GUEST","NHAN_VIEN","BAN_GIAM_DOC","TRUONG_PHONG_HC","PHO_PHONG_HC","NHAN_VIEN_HC","TRUONG_PHONG_NS","PHO_PHONG_NS","NHAN_VIEN_NS","TRUONG_PHONG_TB","PHO_PHONG_TB","NHAN_VIEN_TB","TRUONG_PHONG_TT","PHO_PHONG_TT","NHAN_VIEN_TT","TO_TRUONG_MEDIA","TO_PHO_MEDIA","NHAN_VIEN_MEDIA","TO_TRUONG_SK","TO_PHO_SK","NHAN_VIEN_SK","TRUONG_PHONG_CSKH","PHO_PHONG_CSKH","NHAN_VIEN_CSKH")
                         .anyRequest().authenticated())
                 .sessionManagement(sessionManagement ->
                         // Ứng dụng không duy trì session của người dùng
