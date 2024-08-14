@@ -1,6 +1,7 @@
 package com.training.hrm.services;
 
 import com.training.hrm.customservices.CustomUserDetails;
+import com.training.hrm.dto.ApproveAttendanceRequest;
 import com.training.hrm.dto.MachineAttendanceRequest;
 import com.training.hrm.dto.ManuallyAttendanceRequest;
 import com.training.hrm.exceptions.InvalidException;
@@ -14,9 +15,6 @@ import com.training.hrm.repositories.UserRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -343,6 +341,100 @@ public class AttendanceService {
             throw e;
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while getting this attendance: " + e.getMessage());
+        }
+    }
+
+    public List<ApproveAttendance> readAllApproveAttendance() throws InvalidException, ServiceRuntimeException {
+        try {
+            List<ApproveAttendance> listAllApproveAttendance = approveAttendanceRepository.findAll();
+            if (listAllApproveAttendance == null) {
+                throw new InvalidException("Approve attendence is empty");
+            }
+            return listAllApproveAttendance;
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while getting this attendance: " + e.getMessage());
+        }
+    }
+
+    public ApproveAttendance updateApproveAttendance (Long approveAttendanceID, ApproveAttendanceRequest approveAttendanceRequest) throws InvalidException, ServiceRuntimeException {
+        try {
+            ApproveAttendance exitsApproveAttendance = approveAttendanceRepository.findApproveAttendanceByApproveAttendanceID(approveAttendanceID);
+            if (exitsApproveAttendance == null) {
+                throw new InvalidException("Approve attendance not found");
+            }
+            if (!exitsApproveAttendance.getApproveStatus().equals("PENDING")) {
+                throw new InvalidException("This attendance approved, can not update");
+            }
+            Attendance exitsAttendance = attendanceRepository.findAttendanceByAttendanceID(approveAttendanceRequest.getAttendanceID());
+            if (exitsAttendance == null) {
+                throw new InvalidException("Attendance not found");
+            }
+            if (exitsAttendance.getEmployeeID().equals(approveAttendanceRequest.getEmployeeID()) && exitsApproveAttendance.getDate().equals(approveAttendanceRequest.getDate())) {
+                throw new InvalidException("Attendance already exits");
+            }
+            exitsApproveAttendance.setAttendanceID(approveAttendanceRequest.getAttendanceID());
+            exitsApproveAttendance.setDate(LocalDate.parse(approveAttendanceRequest.getDate()));
+            exitsApproveAttendance.setEmployeeID(approveAttendanceRequest.getEmployeeID());
+
+            if (approveAttendanceRequest.getCheckInTime().isBlank() == false) {
+                String checkInTime = approveAttendanceRequest.getCheckInTime();
+                LocalTime time;
+                try {
+                    time = LocalTime.parse(checkInTime, DateTimeFormatter.ofPattern("HH:mm"));
+                } catch (DateTimeParseException e) {
+                    throw new IllegalArgumentException("Invalid check in time format. Please use HH:mm.");
+                }
+                try {
+                    int hour1 = Integer.parseInt(checkInTime.substring(0, 1));
+                    int hour2 = Integer.parseInt(checkInTime.substring(1, 2));
+                    if ((hour1 * 10 + hour2) < 12) {
+                        exitsApproveAttendance.setCheckInTime(time);
+                    } else {
+                        throw new InvalidException("Check in time must be less than 12 noon");
+                    }
+                } catch (NumberFormatException e) {
+                    throw new NumberFormatException("Please enter a valid time");
+                }
+            }
+
+            if (approveAttendanceRequest.getCheckOutTime().isBlank() == false) {
+                String checkOutTime = approveAttendanceRequest.getCheckOutTime();
+                LocalTime time;
+                try {
+                    time = LocalTime.parse(checkOutTime, DateTimeFormatter.ofPattern("HH:mm"));
+                } catch (DateTimeParseException e) {
+                    throw new IllegalArgumentException("Invalid check out time format. Please use HH:mm.");
+                }
+                try {
+                    int hour1 = Integer.parseInt(checkOutTime.substring(0, 1));
+                    int hour2 = Integer.parseInt(checkOutTime.substring(1, 2));
+                    if ((hour1 * 10 + hour2) >= 12) {
+                        exitsApproveAttendance.setCheckOutTime(time);
+                    } else {
+                        throw new InvalidException("Check out time must be equal or greater than 12 noon");
+                    }
+                } catch (NumberFormatException e) {
+                    throw new NumberFormatException("Please enter a valid time");
+                }
+            }
+
+            if (approveAttendanceRequest.getCheckInTime() == null || approveAttendanceRequest.getCheckOutTime() == null) {
+                exitsApproveAttendance.setWorkHour(LocalTime.of(0, 0));
+            } else {
+                Duration duration = Duration.between(exitsAttendance.getCheckInTime(), exitsAttendance.getCheckOutTime());
+                long hour = duration.toHours();
+                long minute = duration.toMinutes() % 60;
+
+                exitsApproveAttendance.setWorkHour(LocalTime.of((int) hour, (int) minute));
+            }
+
+            return approveAttendanceRepository.save(exitsApproveAttendance);
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while updating this attendance: " + e.getMessage());
         }
     }
 

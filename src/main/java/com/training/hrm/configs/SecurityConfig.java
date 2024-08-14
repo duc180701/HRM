@@ -87,7 +87,9 @@ public class SecurityConfig {
                                 "/user/read/**",
                                 "/report/**",
                                 "/attendance/create-attendance-table/**",
-                                "/attendance/update-attendance/{attendanceID}").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "NHAN_VIEN_NS", "HE_THONG")
+                                "/attendance/update-attendance/{attendanceID}",
+                                "/attendance/read-all-approve-attendance/**",
+                                "/attendance/update-approve-attendance/{approveAttendanceID}/**").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "NHAN_VIEN_NS", "HE_THONG")
                         .requestMatchers("/backup/approve-contract/**",
                                 "/backup/approve-personnel-position/**").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS")
                         .requestMatchers("/attendance/approve-attendance-table/{month}").hasAnyAuthority("TRUONG_PHONG_NS", "PHO_PHONG_NS", "BAN_GIAM_DOC")
@@ -96,7 +98,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/employee/search/**",
                                 "/employee/read/**",
-                                "employee/read-all-employee/**",
+                                "/employee/read-all-employee/**",
                                 "/person/read/**",
                                 "/personnel/read/**",
                                 "/contract/read/**",

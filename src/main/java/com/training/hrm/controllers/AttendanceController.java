@@ -1,5 +1,6 @@
 package com.training.hrm.controllers;
 
+import com.training.hrm.dto.ApproveAttendanceRequest;
 import com.training.hrm.dto.MachineAttendanceRequest;
 import com.training.hrm.dto.ManuallyAttendanceRequest;
 import com.training.hrm.exceptions.InvalidException;
@@ -20,12 +21,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @RestController
@@ -144,6 +147,46 @@ public class AttendanceController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (NumberFormatException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "Get all approve attendance")
+    @GetMapping("/read-all-approve-attendance")
+    public ResponseEntity<Object> readAllApproveAttendance() {
+        try {
+            List<ApproveAttendance> listApproveAttendance = attendanceService.readAllApproveAttendance();
+
+            return new ResponseEntity<>(listApproveAttendance, HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "Update approve attendance by ID")
+    @PostMapping("/update-approve-attendance/{approveAttendanceID}")
+    public ResponseEntity<Object> updateApproveAttendance (@PathVariable String approveAttendanceID, @Valid @RequestBody ApproveAttendanceRequest approveAttendanceRequest, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                throw new InvalidException(result.getAllErrors().get(0).getDefaultMessage());
+            }
+            Long id = Long.parseLong(approveAttendanceID);
+            ApproveAttendance approveAttendance = attendanceService.updateApproveAttendance(id, approveAttendanceRequest);
+
+            return new ResponseEntity<>(approveAttendance, HttpStatus.OK);
+        } catch (DateTimeParseException e) {
+            return new ResponseEntity<>("Invalid date format. Please use yyyy-MM-dd", HttpStatus.BAD_REQUEST);
+        } catch (InvalidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>("Invalid format approve attendance ID", HttpStatus.BAD_REQUEST);
         } catch (ServiceRuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {

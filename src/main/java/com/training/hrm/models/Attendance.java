@@ -1,7 +1,9 @@
 package com.training.hrm.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.apachecommons.CommonsLog;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,6 +20,8 @@ public class Attendance {
     @Column(name = "employee_id")
     private Long employeeID;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @NotNull(message = "Please enter a valid end date")
     @Column(name = "date")
     private LocalDate date;
 
