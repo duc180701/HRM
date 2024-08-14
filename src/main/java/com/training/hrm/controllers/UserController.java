@@ -132,8 +132,9 @@ public class UserController {
         }
     }
 
-    @PostMapping("/avatar/{userID}")
-    public ResponseEntity<Object> uploadAvatar(@PathVariable String userID, @PathVariable String avatarUrl, @RequestParam("file") MultipartFile file) {
+    @Operation(summary = "Update avatar for user account")
+    @PostMapping(value = "/avatar/{userID}", consumes = "multipart/form-data")
+    public ResponseEntity<Object> uploadAvatar(@PathVariable String userID, @RequestParam("file") MultipartFile file) {
         try {
             userService.setAvatar(Long.parseLong(userID), file);
 

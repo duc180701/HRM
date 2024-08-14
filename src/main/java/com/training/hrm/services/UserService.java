@@ -8,6 +8,7 @@ import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.*;
 import com.training.hrm.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,10 +53,13 @@ public class UserService {
             if (user == null) {
                 throw new InvalidException("User not found");
             }
+            // Tạo đường dẫn
+            String fileName = userID + "_" + file.getOriginalFilename();
+            Path path = Paths.get("src/main//resources/static/images/avatars" + "/" + fileName);
+            // Lưu file vào hệ thống
+            Files.write(path, file.getBytes());
 
-            String avatarUrl = saveFile(file);
-
-            user.setAvatar(avatarUrl);
+            user.setAvatar(fileName);
             userRepository.save(user);
         } catch (IOException e) {
             throw new IOException("Failed to set avatar");

@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .csrf((csrf -> csrf.disable()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
+                                "/user/**",
                                 "/attendance/**",
                                 "/swagger-ui/**",
                                 "/v3/**",
@@ -117,7 +118,7 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling
                                 .accessDeniedHandler(accessDeniedHandler)
-                );;
+                );
 
         return http.build();
     }
