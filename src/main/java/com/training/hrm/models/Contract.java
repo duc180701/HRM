@@ -20,24 +20,51 @@ public class Contract {
     @Column(name = "salary")
     private Long salary;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "start_date")
     private LocalDate startDate;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "end_date")
     private LocalDate endDate;
 
     @Column(name = "version")
     private Integer version;
 
+    @Column(name = "approve_by")
+    private String approveBy;
+
+    @Column(name = "approve_date")
+    private LocalDate approveDate;
+
     public Contract() {
     }
 
-    public Contract(Long contractID, String contractType, Long salary, LocalDate startDate, LocalDate endDate) {
+    public Contract(Long contractID, String contractType, Long salary, LocalDate startDate, LocalDate endDate, Integer version, String approveBy, LocalDate approveDate) {
         this.contractID = contractID;
         this.contractType = contractType;
         this.salary = salary;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.version = version;
+        this.approveBy = approveBy;
+        this.approveDate = approveDate;
+    }
+
+    public String getApproveBy() {
+        return approveBy;
+    }
+
+    public void setApproveBy(String approveBy) {
+        this.approveBy = approveBy;
+    }
+
+    public LocalDate getApproveDate() {
+        return approveDate;
+    }
+
+    public void setApproveDate(LocalDate approveDate) {
+        this.approveDate = approveDate;
     }
 
     public Integer getVersion() {

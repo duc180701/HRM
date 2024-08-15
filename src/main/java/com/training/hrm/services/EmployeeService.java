@@ -4,23 +4,31 @@ import com.training.hrm.dto.EmployeeRequest;
 import com.training.hrm.dto.EmployeeResponse;
 import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
-import com.training.hrm.models.Employee;
-import com.training.hrm.models.Person;
-import com.training.hrm.models.Personnel;
+import com.training.hrm.models.*;
 import com.training.hrm.recoveries.RecoveryEmployee;
-import com.training.hrm.repositories.EmployeeRepository;
-import com.training.hrm.repositories.PersonRepository;
-import com.training.hrm.repositories.PersonnelRepository;
-import com.training.hrm.repositories.RecoveryEmployeeRepository;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import com.training.hrm.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class EmployeeService {
+
+    @Autowired
+    private BackupService backupService;
+
+    @Autowired
+    private ApproveBackupEmployeeRepository approveBackupEmployeeRepository;
+
+    @Autowired
+    private ApproveEmployeeContractRepository approveEmployeeContractRepository;
+
+    @Autowired
+    private ContractRepository contractRepository;
 
     @Autowired
     private RecoveryEmployeeRepository recoveryEmployeeRepository;
@@ -39,9 +47,10 @@ public class EmployeeService {
 
             Employee employee = new Employee();
 
-            employee.setContractID(employeeRequest.getContractID());
+            employee.setContractID((long) 0);
             employee.setPersonnelID(employeeRequest.getPersonnelID());
             employee.setPersonID(employeeRequest.getPersonID());
+            employee.setVersion(1);
 
             return employeeRepository.save(employee);
         } catch (ServiceRuntimeException e) {
@@ -62,6 +71,8 @@ public class EmployeeService {
             exitsEmployee.setPersonID(employeeRequest.getPersonID());
             exitsEmployee.setPersonnelID(employeeRequest.getPersonnelID());
             exitsEmployee.setContractID(employeeRequest.getContractID());
+            exitsEmployee.setVersion(exitsEmployee.getVersion() + 1);
+
             return employeeRepository.save(exitsEmployee);
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while updating the employee: " + e.getMessage());
@@ -276,6 +287,134 @@ public class EmployeeService {
             throw e;
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while getting all employee: " + e.getMessage());
+        }
+    }
+
+    //Approve Backup Employee
+    public ApproveBackupEmployee createApproveBackupEmployee (EmployeeRequest employeeRequest, Long employeeID) throws InvalidException, ServiceRuntimeException {
+        try {
+            Employee exitsEmployee = employeeRepository.findEmployeeByEmployeeID(employeeID);
+            if (exitsEmployee == null) {
+                throw new InvalidException("Employee not found");
+            }
+
+            ApproveBackupEmployee approveBackupEmployee = new ApproveBackupEmployee();
+            approveBackupEmployee.setEmployeeID(employeeID);
+            approveBackupEmployee.setPersonID(employeeRequest.getPersonID());
+            approveBackupEmployee.setPersonnelID(employeeRequest.getPersonnelID());
+            approveBackupEmployee.setOldContractID(exitsEmployee.getContractID());
+            approveBackupEmployee.setNewContractID(employeeRequest.getContractID());
+            approveBackupEmployee.setVersion(exitsEmployee.getVersion());
+            approveBackupEmployee.setApproveBy("");
+            approveBackupEmployee.setApproveDate(LocalDate.now());
+            approveBackupEmployee.setStatus("PENDING");
+
+            return approveBackupEmployeeRepository.save(approveBackupEmployee);
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while getting all employee: " + e.getMessage());
+        }
+    }
+
+    public Employee approveBackupEmployee(Long approveBackupEmployeeID, String username) throws InvalidException, ServiceRuntimeException {
+        try {
+            ApproveBackupEmployee approveBackupEmployee = approveBackupEmployeeRepository.findApproveBackupEmployeeByApproveBackupEmployeeID(approveBackupEmployeeID);
+            if (approveBackupEmployee == null) {
+                throw new InvalidException("Approve backup employee not found");
+            }
+
+            approveBackupEmployee.setStatus("APPROVED");
+            approveBackupEmployee.setApproveBy(username);
+            approveBackupEmployee.setApproveDate(LocalDate.now());
+
+            approveBackupEmployeeRepository.save(approveBackupEmployee);
+
+            Employee employee = employeeRepository.findEmployeeByEmployeeID(approveBackupEmployee.getEmployeeID());
+            if (employee.getVersion().equals(approveBackupEmployee.getVersion())) {
+                employee.setVersion(approveBackupEmployee.getVersion() + 1);
+                employee.setPersonID(approveBackupEmployee.getPersonID());
+                employee.setPersonnelID(approveBackupEmployee.getPersonnelID());
+                employee.setContractID(approveBackupEmployee.getNewContractID());
+
+                // Backup
+                backupService.createBackupEmployeeContract(employee);
+
+                return employeeRepository.save(employee);
+            } else {
+                throw new InvalidException("Conflict detected, another user has modified this product");
+            }
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while creating the approve employee contract: " + e.getMessage());
+        }
+    }
+
+    //Approve Employee Contract
+    public ApproveEmployeeContract createApproveEmployeeContract (EmployeeRequest employeeRequest) throws InvalidException, ServiceRuntimeException {
+        try {
+            ApproveEmployeeContract approveEmployeeContract = new ApproveEmployeeContract();
+            approveEmployeeContract.setPersonnelID(employeeRequest.getPersonnelID());
+            approveEmployeeContract.setPersonID(employeeRequest.getPersonID());
+            Contract exitsContract = contractRepository.findContractByContractID(employeeRequest.getContractID());
+            if (exitsContract == null) {
+                throw new InvalidException("Contract not found");
+            }
+            if (exitsContract.getApproveBy().isEmpty()) {
+                throw new InvalidException("The contract has not been signed, cannot be added");
+            }
+            approveEmployeeContract.setContractID(employeeRequest.getContractID());
+            approveEmployeeContract.setApproveBy("");
+            approveEmployeeContract.setApproveDate(LocalDate.of(0, 0, 0));
+            approveEmployeeContract.setStatus("PENDING");
+
+            return approveEmployeeContractRepository.save(approveEmployeeContract);
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while creating the approve employee contract: " + e.getMessage());
+        }
+    }
+
+    public List<ApproveEmployeeContract> getAllApproveEmployeeContract() throws InvalidException, ServiceRuntimeException {
+        try {
+            List<ApproveEmployeeContract> listApproveEmployeeContract = approveEmployeeContractRepository.findAll();
+            if (listApproveEmployeeContract.isEmpty()) {
+                throw new InvalidException("No approve employee contract found");
+            }
+
+            return listApproveEmployeeContract;
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while creating the approve employee contract: " + e.getMessage());
+        }
+    }
+
+    public Employee approveEmployeeContractChange(Long approveEmployeeContractID, String username) throws InvalidException, ServiceRuntimeException {
+        try {
+            ApproveEmployeeContract approveEmployeeContract = approveEmployeeContractRepository.findApproveEmployeeContractByApproveEmployeeContractID(approveEmployeeContractID);
+            if (approveEmployeeContract == null) {
+                throw new InvalidException("Approve employee contract not found");
+            }
+            approveEmployeeContract.setApproveDate(LocalDate.now());
+            approveEmployeeContract.setApproveBy(username);
+            approveEmployeeContract.setStatus("APPROVED");
+
+            approveEmployeeContractRepository.save(approveEmployeeContract);
+
+            Employee employee = new Employee();
+            employee.setContractID(approveEmployeeContract.getContractID());
+            employee.setPersonnelID(approveEmployeeContract.getPersonnelID());
+            employee.setPersonID(approveEmployeeContract.getPersonID());
+            employee.setVersion(1);
+
+            return employeeRepository.save(employee);
+        } catch (InvalidException e) {
+            throw e;
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while creating the approve employee contract: " + e.getMessage());
         }
     }
 }

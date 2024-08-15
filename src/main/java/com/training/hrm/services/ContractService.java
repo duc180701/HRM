@@ -1,6 +1,7 @@
 package com.training.hrm.services;
 
 import com.training.hrm.dto.ContractRequest;
+import com.training.hrm.exceptions.InvalidException;
 import com.training.hrm.exceptions.ServiceRuntimeException;
 import com.training.hrm.models.ApproveBackupContract;
 import com.training.hrm.models.Contract;
@@ -8,8 +9,10 @@ import com.training.hrm.recoveries.RecoveryContract;
 import com.training.hrm.repositories.ContractRepository;
 import com.training.hrm.repositories.RecoveryContractRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class ContractService {
@@ -28,6 +31,8 @@ public class ContractService {
             contract.setSalary(contractRequest.getSalary());
             contract.setStartDate(contractRequest.getStartDate());
             contract.setEndDate(contractRequest.getEndDate());
+            contract.setApproveBy("");
+            contract.setApproveDate(LocalDate.of(0, 0, 0));
             contract.setVersion(1);
 
             return contractRepository.save(contract);
@@ -44,7 +49,7 @@ public class ContractService {
         }
     }
 
-    public Contract updateContract(ApproveBackupContract approveBackupContract) throws ServiceRuntimeException {
+    public Contract updateContract(ApproveBackupContract approveBackupContract, String username) throws ServiceRuntimeException {
         try {
             Contract updateContract = contractRepository.findContractByContractID(approveBackupContract.getContractID());
             updateContract.setSalary(approveBackupContract.getSalary());
@@ -52,6 +57,8 @@ public class ContractService {
             updateContract.setStartDate(approveBackupContract.getStartDate());
             updateContract.setEndDate(approveBackupContract.getEndDate());
             updateContract.setVersion(approveBackupContract.getVersion() + 1);
+            updateContract.setApproveBy(username);
+            updateContract.setApproveDate(LocalDate.now());
 
             return contractRepository.save(updateContract);
         } catch (ServiceRuntimeException e) {
@@ -73,6 +80,23 @@ public class ContractService {
             recoveryContractRepository.save(recoveryContract);
 
             contractRepository.deleteById(id);
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while deleting the contract: " + e.getMessage());
+        }
+    }
+
+    public Contract approveContract(Long contractID, String username) throws InvalidException, ServiceRuntimeException {
+        try {
+            Contract contract = contractRepository.findContractByContractID(contractID);
+            if (contract == null) {
+                throw new InvalidException("Contract not found");
+            }
+            contract.setApproveBy(username);
+            contract.setApproveDate(LocalDate.now());
+
+            return contractRepository.save(contract);
+        } catch (InvalidException e) {
+            throw e;
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while deleting the contract: " + e.getMessage());
         }

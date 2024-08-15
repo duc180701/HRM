@@ -18,14 +18,26 @@ public class Employee {
     @Column(name = "contract_id")
     private Long contractID;
 
+    @Column(name = "version")
+    private Integer version;
+
     public Employee() {
     }
 
-    public Employee(Long employeeID, Long personnelID, Long personID, Long contractID) {
+    public Employee(Long employeeID, Long personnelID, Long personID, Long contractID, Integer version) {
         this.employeeID = employeeID;
         this.personnelID = personnelID;
         this.personID = personID;
         this.contractID = contractID;
+        this.version = version;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     public Long getEmployeeID() {

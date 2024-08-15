@@ -13,6 +13,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -120,4 +122,27 @@ public class ContractController {
         }
     }
 
+    @Operation(summary = "Approve a contract by ID")
+    @PostMapping("/approve-contract/{contractID}")
+    public ResponseEntity<Object> approveContract(@PathVariable String contractID) {
+        try {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            if (principal instanceof UserDetails) {
+                String username = ((UserDetails) principal).getUsername();
+                Contract contract = contractService.approveContract(Long.parseLong(contractID), username);
+                return new ResponseEntity<>(contract, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("You must be logged in to perform this endpoint", HttpStatus.OK);
+            }
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>("Invalid contract ID format", HttpStatus.BAD_REQUEST);
+        } catch (InvalidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

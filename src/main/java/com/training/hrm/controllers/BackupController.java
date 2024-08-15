@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -187,19 +189,27 @@ public class BackupController {
     @PostMapping("/approve-contract/{backupContractID}")
     public ResponseEntity<Object> approveUpdateContract(@PathVariable String backupContractID) {
         try {
-            Long id = Long.parseLong(backupContractID);
-            if (approveBackupContractRepository.findApproveBackupContractByApproveBackupContractID(id) == null) {
-                throw new InvalidException("Approve backup contract not found");
-            }
-            ApproveBackupContract approveBackupContract = backupService.approveBackupContract(id); //Set approve to true
-            Contract oldContract = contractRepository.findContractByContractID(approveBackupContract.getContractID());
-            if (oldContract.getVersion() != approveBackupContract.getVersion()) {
-                backupService.rejectBackupContract(id);
-                throw new InvalidException("Conflict detected, another user has modified this product");
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            if (principal instanceof UserDetails) {
+                String username = ((UserDetails) principal).getUsername();
+
+                Long id = Long.parseLong(backupContractID);
+                if (approveBackupContractRepository.findApproveBackupContractByApproveBackupContractID(id) == null) {
+                    throw new InvalidException("Approve backup contract not found");
+                }
+                ApproveBackupContract approveBackupContract = backupService.approveBackupContract(id); //Set approve to true
+                Contract oldContract = contractRepository.findContractByContractID(approveBackupContract.getContractID());
+                if (oldContract.getVersion() != approveBackupContract.getVersion()) {
+                    backupService.rejectBackupContract(id);
+                    throw new InvalidException("Conflict detected, another user has modified this product");
+                } else {
+                    backupService.createBackupContract(oldContract);
+                    Contract updateContract = contractService.updateContract(approveBackupContract, username);
+                    return new ResponseEntity<>(updateContract, HttpStatus.OK);
+                }
             } else {
-                backupService.createBackupContract(oldContract);
-                Contract updateContract = contractService.updateContract(approveBackupContract);
-                return new ResponseEntity<>(updateContract, HttpStatus.OK);
+                return new ResponseEntity<>("You must be logged in to perform this endpoint", HttpStatus.OK);
             }
         } catch (NumberFormatException e) {
             return new ResponseEntity<>("Please enter a valid backup contact ID", HttpStatus.BAD_REQUEST);

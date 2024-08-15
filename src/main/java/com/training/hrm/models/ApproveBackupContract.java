@@ -47,10 +47,16 @@ public class ApproveBackupContract {
     @Column(name = "version")
     private Integer version;
 
+    @Column(name = "approve_by")
+    private String approveBy;
+
+    @Column(name = "approve_date")
+    private LocalDate approveDate;
+
     public ApproveBackupContract() {
     }
 
-    public ApproveBackupContract(Long approveBackupContractID, Long contractID, String contractType, Long salary, LocalDate startDate, LocalDate endDate, LocalDate date, String reason, boolean approve) {
+    public ApproveBackupContract(Long approveBackupContractID, Long contractID, String contractType, Long salary, LocalDate startDate, LocalDate endDate, LocalDate date, String reason, boolean approve, Integer version, String approveBy, LocalDate approveDate) {
         this.approveBackupContractID = approveBackupContractID;
         this.contractID = contractID;
         this.contractType = contractType;
@@ -60,6 +66,25 @@ public class ApproveBackupContract {
         this.date = date;
         this.reason = reason;
         this.approve = approve;
+        this.version = version;
+        this.approveBy = approveBy;
+        this.approveDate = approveDate;
+    }
+
+    public String getApproveBy() {
+        return approveBy;
+    }
+
+    public void setApproveBy(String approveBy) {
+        this.approveBy = approveBy;
+    }
+
+    public LocalDate getApproveDate() {
+        return approveDate;
+    }
+
+    public void setApproveDate(LocalDate approveDate) {
+        this.approveDate = approveDate;
     }
 
     public Integer getVersion() {

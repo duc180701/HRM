@@ -49,6 +49,8 @@ public class SecurityConfig {
                 .csrf((csrf -> csrf.disable()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
+                                "/employee/**",
+                                "/contract/**",
                                 "/user/**",
                                 "/attendance/**",
                                 "/swagger-ui/**",
@@ -63,9 +65,15 @@ public class SecurityConfig {
                                 "/backup/read-backup-personnel-position/**",
                                 "/backup/read-backup-personnel-department/**",
                                 "/backup/read-backup-employee-contract/",
-                                "/backup/read-backup-contract/**"
+                                "/backup/read-backup-contract/**",
+                                "/employee/read-all-approve-employee-contract/**"
                                ).hasAnyAuthority("HE_THONG", "ADMIN", "BAN_GIAM_DOC")
-                        .requestMatchers( "/recovery/**").hasAnyAuthority("BAN_GIAM_DOC", "HE_THONG")
+                        .requestMatchers(
+                                "/recovery/**",
+                                "/contract/approve-contract/{contractID)/**",
+                                "/employee/approve-employee-contract-change/{approveEmployeeContractID}",
+                                "/employee/approve-backup-employee/{approveBackupEmployeeID}"
+                        ).hasAnyAuthority("BAN_GIAM_DOC", "HE_THONG")
                         .requestMatchers(
                                 "/attendance/create-by-manually/**",
                                 "/attendance/create-by-file/**").hasAnyAuthority("ADMIN", "HE_THONG")

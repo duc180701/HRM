@@ -178,6 +178,8 @@ public class BackupService {
             approveBackupContract.setDate(LocalDate.now());
             approveBackupContract.setApprove(false);
             approveBackupContract.setVersion(exitsContract.getVersion());
+            approveBackupContract.setApproveBy("");
+            approveBackupContract.setApproveDate(LocalDate.of(0, 0, 0));
 
             return approveBackupContractRepository.save(approveBackupContract);
         } catch (InvalidException e) {
