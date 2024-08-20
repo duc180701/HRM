@@ -38,12 +38,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
-        // Lấy tất cả các quyền có trong hệ thống
-        List<String> roles = roleRepository.findAllRoleNames();
-        String rolesString = String.join("','", roles);
-        String accessExpressionWithQuotes = rolesString.replace("'", "\"");
-        String accessExpression = "\"" + accessExpressionWithQuotes + "\"";
-        System.out.println(accessExpression);
+//         Lấy tất cả các quyền có trong hệ thống
+//        List<String> roles = roleRepository.findAllRoleNames();
+//        String rolesString = String.join("','", roles);
+//        String accessExpressionWithQuotes = rolesString.replace("'", "\"");
+//        String accessExpression = "\"" + accessExpressionWithQuotes + "\"";
+//        System.out.println(accessExpression);
 
         http
                 .csrf((csrf -> csrf.disable()))
