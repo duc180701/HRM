@@ -1,5 +1,6 @@
 package com.training.hrm.controllers;
 
+import com.training.hrm.components.JwtUtil;
 import com.training.hrm.dto.EmployeeRequest;
 import com.training.hrm.dto.EmployeeResponse;
 import com.training.hrm.exceptions.BadRequestException;
@@ -13,6 +14,7 @@ import com.training.hrm.repositories.*;
 import com.training.hrm.services.BackupService;
 import com.training.hrm.services.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/employee")
 public class EmployeeController {
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -111,7 +116,7 @@ public class EmployeeController {
         }
     }
 
-    @Operation(summary = "Read a employee by employee ID")
+    @Operation(summary = "Read full information of a employee by employee ID")
     @GetMapping("/read/{employeeID}")
     public ResponseEntity<Object> readEmployee(@PathVariable String employeeID) {
         try {
@@ -128,6 +133,34 @@ public class EmployeeController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             return new ResponseEntity<>("An unexpected error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Operation(summary = "Read your own employee information")
+    @GetMapping("/read-myself-employee")
+    public ResponseEntity<Object> readMyselfEmployee(HttpServletRequest request) {
+        try {
+            String token = request.getHeader("Authorization");
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            } else {
+                return new ResponseEntity<>("Invalid token", HttpStatus.BAD_REQUEST);
+            }
+
+            String employeeID = jwtUtil.extractEmployeeID(token);
+            EmployeeResponse employeeResponse = employeeService.readMyselfEmployee(Long.parseLong(employeeID));
+
+            return new ResponseEntity<>(employeeResponse, HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>("Invalid employee ID format", HttpStatus.BAD_REQUEST);
+        } catch (InvalidException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (BadRequestException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceRuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 

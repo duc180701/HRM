@@ -10,6 +10,7 @@ import com.training.hrm.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.cache.TemplateCacheKey;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -61,6 +62,36 @@ public class EmployeeService {
     public Employee readEmployee(Long id) throws ServiceRuntimeException {
         try {
             return employeeRepository.findEmployeeByEmployeeID(id);
+        } catch (ServiceRuntimeException e) {
+            throw new ServiceRuntimeException("An error occurred while reading the employee: " + e.getMessage());
+        }
+    }
+
+    public EmployeeResponse readMyselfEmployee(Long employeeID) throws ServiceRuntimeException, InvalidException {
+        try {
+            Employee employee = employeeRepository.findEmployeeByEmployeeID(employeeID);
+            if (employee == null) {
+                throw new InvalidException("Employee not found");
+            }
+            Person person = personRepository.findPersonByPersonID(employee.getPersonID());
+            if (person == null) {
+                throw new InvalidException("Person not found");
+            }
+            Personnel personnel = personnelRepository.findPersonnelByPersonnelID(employee.getPersonnelID());
+            if (personnel == null) {
+                throw new InvalidException("Personnel not found");
+            }
+
+            EmployeeResponse employeeResponse = new EmployeeResponse();
+            employeeResponse.setEmployeeID(employeeID);
+            employeeResponse.setFullName(person.getFullName());
+            employeeResponse.setPosition(personnel.getPosition());
+            employeeResponse.setDepartment(personnel.getDepartment());
+            employeeResponse.setStatus(personnel.getStatus());
+
+            return employeeResponse;
+        } catch (InvalidException e) {
+            throw e;
         } catch (ServiceRuntimeException e) {
             throw new ServiceRuntimeException("An error occurred while reading the employee: " + e.getMessage());
         }

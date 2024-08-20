@@ -1,5 +1,6 @@
 package com.training.hrm.components;
 
+import com.training.hrm.customservices.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -50,7 +51,11 @@ public class JwtUtil {
 
     // Trích xuất tất cả giá trị từ JWT
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     // Kiểm tra thời gian hết hạn của JWT
@@ -61,19 +66,43 @@ public class JwtUtil {
     // Tạo JWT để xác thực chứa tên người dùng và các thông tin cần thiết khác
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+
+        if (userDetails instanceof CustomUserDetails) {
+            CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
+            claims.put("userID", customUserDetails.getUserID());
+            claims.put("employeeID", customUserDetails.getEmployeeID());
+            String role = customUserDetails.getAuthorities().toString();
+            claims.put("role", role.substring(1, role.length() - 1));
+        }
         return createToken(claims, userDetails.getUsername());
     }
 
     // Khởi tạo token với claims cung cấp, tên người dùng và thời gian khởi tạo, ký và chuyển đổi thành chuỗi JWT hoàn chỉnh
     private String createToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
-                .signWith(key, SignatureAlgorithm.HS256).compact();
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
     }
 
     // Kiểm tra token có đúng với người dùng và còn thời gian hiệu lực
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    public String extractUserID(String token) {
+        return extractClaim(token, claims -> claims.get("userID", String.class));
+    }
+
+    public String extractEmployeeID(String token) {
+        return extractClaim(token, claims -> claims.get("employeeID", String.class));
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 }

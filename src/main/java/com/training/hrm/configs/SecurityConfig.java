@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/employee/**",
+                                "/test/**",
                                 "/contract/**",
                                 "/user/**",
                                 "/attendance/**",
@@ -108,6 +109,7 @@ public class SecurityConfig {
                                 "/employee/search/**",
                                 "/employee/read/**",
                                 "/employee/read-all-employee/**",
+                                "/employee/read-myself-employee/**",
                                 "/person/read/**",
                                 "/personnel/read/**",
                                 "/contract/read/**",
